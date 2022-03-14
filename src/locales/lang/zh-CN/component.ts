@@ -86,6 +86,8 @@ export default {
     unSelectAll: '取消选择',
     expandAll: '展开全部',
     unExpandAll: '折叠全部',
+    reload: '刷新',
+
     checkStrictly: '层级关联',
     checkUnStrictly: '层级独立',
   },

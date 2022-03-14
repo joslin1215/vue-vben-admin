@@ -82,6 +82,7 @@ export default {
     unSelectAll: 'Cancel Select',
     expandAll: 'Expand All',
     unExpandAll: 'Collapse all',
+    reload: 'Reload Data',
 
     checkStrictly: 'Hierarchical association',
     checkUnStrictly: 'Hierarchical independence',

@@ -40,6 +40,7 @@
         expandedKeys: props.expandedKeys || [],
         selectedKeys: props.selectedKeys || [],
         checkedKeys: props.checkedKeys || [],
+        redoExpandAll: false,
       });
 
       const searchState = reactive({
@@ -175,8 +176,16 @@
         state.checkedKeys = checkAll ? getEnabledKeys() : ([] as KeyType[]);
       }
 
-      function expandAll(expandAll: boolean) {
-        state.expandedKeys = expandAll ? getAllKeys() : ([] as KeyType[]);
+      function expandAll(isExpandAll: boolean) {
+        state.expandedKeys = isExpandAll ? getAllKeys() : ([] as KeyType[]);
+        if (!state.expandedKeys || state.expandedKeys.length === 0) {
+          if (!state.redoExpandAll) {
+            state.redoExpandAll = true;
+            setTimeout(() => {
+              expandAll(isExpandAll);
+            }, 100);
+          }
+        }
       }
 
       function onStrictlyChange(strictly: boolean) {
@@ -201,8 +210,16 @@
           if (val) {
             handleSearch(searchState.searchText);
           }
+          if (props.defaultExpandAll) {
+            state.redoExpandAll = false;
+            expandAll(true);
+          }
         },
       );
+
+      function reload() {
+        emit('reload');
+      }
 
       function handleSearch(searchValue: string) {
         if (searchValue !== searchState.searchText) searchState.searchText = searchValue;
@@ -268,6 +285,7 @@
       });
 
       onMounted(() => {
+        state.redoExpandAll = false;
         const level = parseInt(props.defaultExpandLevel);
         if (level > 0) {
           state.expandedKeys = filterByLevel(level);
@@ -330,6 +348,7 @@
         getSearchValue: () => {
           return searchState.searchText;
         },
+        reload,
       };
 
       function renderAction(node: TreeItem) {
@@ -421,6 +440,7 @@
                 helpMessage={helpMessage}
                 onStrictlyChange={onStrictlyChange}
                 onSearch={handleSearch}
+                reload={reload}
                 searchText={searchState.searchText}
               >
                 {extendSlots(slots)}

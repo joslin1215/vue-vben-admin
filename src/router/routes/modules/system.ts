@@ -19,9 +19,8 @@ const system: AppRouteModule = {
       name: 'AccountManagement',
       meta: {
         title: t('routes.demo.system.account'),
-        ignoreKeepAlive: false,
       },
-      component: () => import('/@/views/demo/system/account/index.vue'),
+      component: () => import('/@/views/system/account/index.vue'),
     },
     {
       path: 'account_detail/:id',
@@ -33,16 +32,15 @@ const system: AppRouteModule = {
         showMenu: false,
         currentActiveMenu: '/system/account',
       },
-      component: () => import('/@/views/demo/system/account/AccountDetail.vue'),
+      component: () => import('/@/views/system/account/AccountDetail.vue'),
     },
     {
       path: 'role',
       name: 'RoleManagement',
       meta: {
         title: t('routes.demo.system.role'),
-        ignoreKeepAlive: true,
       },
-      component: () => import('/@/views/demo/system/role/index.vue'),
+      component: () => import('/@/views/system/role/index.vue'),
     },
 
     {
@@ -50,18 +48,16 @@ const system: AppRouteModule = {
       name: 'MenuManagement',
       meta: {
         title: t('routes.demo.system.menu'),
-        ignoreKeepAlive: true,
       },
-      component: () => import('/@/views/demo/system/menu/index.vue'),
+      component: () => import('/@/views/system/menu/index.vue'),
     },
     {
       path: 'dept',
       name: 'DeptManagement',
       meta: {
         title: t('routes.demo.system.dept'),
-        ignoreKeepAlive: true,
       },
-      component: () => import('/@/views/demo/system/dept/index.vue'),
+      component: () => import('/@/views/system/dept/index.vue'),
     },
     {
       path: 'changePassword',
@@ -70,7 +66,15 @@ const system: AppRouteModule = {
         title: t('routes.demo.system.password'),
         ignoreKeepAlive: true,
       },
-      component: () => import('/@/views/demo/system/password/index.vue'),
+      component: () => import('/@/views/system/password/index.vue'),
+    },
+    {
+      path: 'region',
+      name: 'RegionManagement',
+      meta: {
+        title: t('routes.demo.system.region'),
+      },
+      component: () => import('/@/views/system/region/index.vue'),
     },
   ],
 };

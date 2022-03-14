@@ -7,20 +7,20 @@ export type AccountParams = BasicPageParams & {
 
 export type RoleParams = {
   name?: string;
-  status?: string;
+  status?: number | string;
 };
 
 export type RolePageParams = BasicPageParams & RoleParams;
 
 export type DeptParams = {
   name?: string;
-  status?: string;
+  status?: number | string;
   parentCode?: string;
 };
 
 export type RegionParams = {
   name?: string;
-  status?: string;
+  status?: number | string;
   parentCode?: string;
 };
 

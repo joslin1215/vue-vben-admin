@@ -11,12 +11,11 @@ import {
   RegionListGetResultModel,
   RegionParams,
   DeptParams,
-} from './model/systemModel';
+} from '/@/api/system/model/systemModel';
 import { defHttp, http } from '/@/utils/http/axios';
 
 enum Api {
   AccountList = '/sys/user/list',
-  IsAccountExist = '/system/accountExist',
   DeptList = '/sys/organization/tree',
   setRoleStatus = '/sys/role/status',
   MenuList = '/system/getMenuList',
@@ -44,6 +43,3 @@ export const getAllRoleList = (params?: RoleParams) =>
 
 export const setRoleStatus = (id: number, status: string) =>
   defHttp.post({ url: Api.setRoleStatus, params: { id, status } });
-
-export const isAccountExist = (account: string) =>
-  defHttp.post({ url: Api.IsAccountExist, params: { account } }, { errorMessageMode: 'none' });

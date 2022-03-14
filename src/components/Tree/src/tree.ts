@@ -10,6 +10,7 @@ export enum ToolbarEnum {
   UN_EXPAND_ALL,
   CHECK_STRICTLY,
   CHECK_UN_STRICTLY,
+  RELOAD,
 }
 
 export const treeEmits = [
@@ -19,6 +20,7 @@ export const treeEmits = [
   'change',
   'check',
   'update:searchValue',
+  'reload',
 ];
 
 export interface TreeState {
@@ -26,6 +28,7 @@ export interface TreeState {
   selectedKeys: KeyType[];
   checkedKeys: CheckKeys;
   checkStrictly: boolean;
+  redoExpandAll: boolean;
 }
 
 export interface FieldNames {
@@ -181,4 +184,5 @@ export interface TreeActionType {
   updateNodeByKey: (key: string, node: Omit<TreeDataItem, 'key'>) => void;
   setSearchValue: (value: string) => void;
   getSearchValue: () => string;
+  reload: () => void;
 }

@@ -79,8 +79,12 @@
       type: Function,
       default: undefined,
     },
+    reload: {
+      tyep: Function,
+      default: undefined,
+    },
   } as const);
-  const emit = defineEmits(['strictly-change', 'search']);
+  const emit = defineEmits(['strictly-change', 'search', 'reload']);
 
   const slots = useSlots();
   const { t } = useI18n();
@@ -98,7 +102,9 @@
 
   const toolbarList = computed(() => {
     const { checkable } = props;
+    const reload = [{ label: t('component.tree.reload'), value: ToolbarEnum.RELOAD }];
     const defaultToolbarList = [
+      ...reload,
       { label: t('component.tree.expandAll'), value: ToolbarEnum.EXPAND_ALL },
       {
         label: t('component.tree.unExpandAll'),
@@ -109,6 +115,8 @@
 
     return checkable
       ? [
+          ...reload,
+          { label: t('component.tree.reload'), value: ToolbarEnum.RELOAD },
           { label: t('component.tree.selectAll'), value: ToolbarEnum.SELECT_ALL },
           {
             label: t('component.tree.unSelectAll'),
@@ -142,6 +150,9 @@
         break;
       case ToolbarEnum.CHECK_UN_STRICTLY:
         emit('strictly-change', true);
+        break;
+      case ToolbarEnum.RELOAD:
+        props.reload?.();
         break;
     }
   }

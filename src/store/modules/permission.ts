@@ -184,11 +184,14 @@ export const usePermissionStore = defineStore({
           // this function may only need to be executed once, and the actual project can be put at the right time by itself
           let routeList: AppRouteRecordRaw[] = [];
           try {
-            this.changePermissionCode();
+            // TODO 临时屏蔽权限
+            // this.changePermissionCode();
             routeList = (await getMenuList()) as AppRouteRecordRaw[];
           } catch (error) {
             console.error(error);
           }
+
+          console.log('routeList', routeList);
 
           // Dynamically introduce components
           routeList = transformObjToRoute(routeList);

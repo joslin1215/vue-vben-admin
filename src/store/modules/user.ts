@@ -20,7 +20,7 @@ import { h } from 'vue';
 interface UserState {
   userInfo: Nullable<UserInfo>;
   token?: string;
-  roleList: RoleEnum[];
+  roleList: [];
   sessionTimeout?: boolean;
   lastUpdateTime: number;
 }
@@ -46,7 +46,7 @@ export const useUserStore = defineStore({
     getToken(): string {
       return this.token || getAuthCache<string>(TOKEN_KEY);
     },
-    getRoleList(): RoleEnum[] {
+    getRoleList(): any[] {
       return this.roleList.length > 0 ? this.roleList : getAuthCache<RoleEnum[]>(ROLES_KEY);
     },
     getSessionTimeout(): boolean {
@@ -61,7 +61,7 @@ export const useUserStore = defineStore({
       this.token = info ? info : ''; // for null or undefined value
       setAuthCache(TOKEN_KEY, info);
     },
-    setRoleList(roleList: RoleEnum[]) {
+    setRoleList(roleList) {
       this.roleList = roleList;
       setAuthCache(ROLES_KEY, roleList);
     },
@@ -125,12 +125,15 @@ export const useUserStore = defineStore({
     async getUserInfoAction(): Promise<UserInfo | null> {
       if (!this.getToken) return null;
       const userInfo = await getUserInfo();
-      const { roles = [] } = userInfo;
+      const { roleObjs: roles = [] } = userInfo;
       if (isArray(roles)) {
-        const roleList = roles.map((item) => item.value) as RoleEnum[];
+        userInfo.roleIds = roles.map((role) => role.id);
+        const roleList = roles.map((item) => {
+          return item.name;
+        });
         this.setRoleList(roleList);
       } else {
-        userInfo.roles = [];
+        userInfo.roleObjs = [];
         this.setRoleList([]);
       }
       this.setUserInfo(userInfo);

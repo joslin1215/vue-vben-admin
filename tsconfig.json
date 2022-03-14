@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./tsbuild",
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",

@@ -9,21 +9,21 @@
         <TableAction
           :actions="[
             {
-              icon: 'clarity:info-standard-line',
-              tooltip: '查看用户详情',
-              onClick: handleView.bind(null, record),
-            },
-            {
               icon: 'clarity:note-edit-line',
               tooltip: '编辑用户资料',
               onClick: handleEdit.bind(null, record),
+            },
+            {
+              icon: 'ant-design:lock-outline',
+              tooltip: '修改密码',
+              onClick: handleChangePwd.bind(null, record),
             },
             {
               icon: 'ant-design:delete-outlined',
               color: 'error',
               tooltip: '删除此账号',
               popConfirm: {
-                title: '是否确认删除',
+                title: '是否确认删除?',
                 confirm: handleDelete.bind(null, record),
               },
             },
@@ -31,45 +31,59 @@
         />
       </template>
     </BasicTable>
-    <AccountModal @register="registerModal" @success="handleSuccess" />
+    <!--    <AccountModal @register="registerModal" @success="handleSuccess" />-->
+    <AccountDrawer @register="registerModal" @success="handleSuccess" />
+    <ChangePwdDrawer @register="registerChangePwd" />
   </PageWrapper>
 </template>
 <script lang="ts">
   import { defineComponent, reactive } from 'vue';
 
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getAccountList } from '/@/api/demo/system';
+  import { getAccountList } from '/@/api/system/system';
   import { PageWrapper } from '/@/components/Page';
   import DeptTree from './DeptTree.vue';
 
-  import { useModal } from '/@/components/Modal';
-  import AccountModal from './AccountModal.vue';
+  // import { useModal } from '/@/components/Modal';
+  // import AccountModal from './AccountModal.vue';
+
+  import { useDrawer } from '/@/components/Drawer';
+  import AccountDrawer from './AccountDrawer.vue';
 
   import { columns, searchFormSchema } from './account.data';
   import { useGo } from '/@/hooks/web/usePage';
+  import { removeUser } from '/@/api/system/account/Api';
+  import ChangePwdDrawer from '/@/views/system/account/ChangePwdDrawer.vue';
 
   export default defineComponent({
     name: 'AccountManagement',
-    components: { BasicTable, PageWrapper, DeptTree, AccountModal, TableAction },
+    components: { ChangePwdDrawer, BasicTable, PageWrapper, DeptTree, AccountDrawer, TableAction },
     setup() {
       const go = useGo();
-      const [registerModal, { openModal }] = useModal();
+      const [registerModal, { openDrawer }] = useDrawer();
+      const [registerChangePwd, { openDrawer: openChangePwd }] = useDrawer();
       const searchInfo = reactive<Recordable>({});
-      const [registerTable, { reload, updateTableDataRecord }] = useTable({
+      const [registerTable, { reload }] = useTable({
         title: '账号列表',
         api: getAccountList,
         rowKey: 'id',
         columns,
         formConfig: {
-          labelWidth: 120,
+          labelWidth: 80,
           schemas: searchFormSchema,
           autoSubmitOnEnter: true,
+          actionColOptions: {
+            span: 4,
+          },
+          submitOnChange: true,
+        },
+        fetchSetting: {
+          listField: 'rows',
         },
         useSearchForm: true,
         showTableSetting: true,
         bordered: true,
         handleSearchInfoFn(info) {
-          console.log('handleSearchInfoFn', info);
           return info;
         },
         actionColumn: {
@@ -81,36 +95,35 @@
       });
 
       function handleCreate() {
-        openModal(true, {
+        openDrawer(true, {
           isUpdate: false,
         });
       }
 
       function handleEdit(record: Recordable) {
-        console.log(record);
-        openModal(true, {
+        openDrawer(true, {
           record,
           isUpdate: true,
         });
       }
 
-      function handleDelete(record: Recordable) {
-        console.log(record);
+      function handleChangePwd(record: Recordable) {
+        openChangePwd(true, {
+          record,
+        });
       }
 
-      function handleSuccess({ isUpdate, values }) {
-        if (isUpdate) {
-          // 演示不刷新表格直接更新内部数据。
-          // 注意：updateTableDataRecord要求表格的rowKey属性为string并且存在于每一行的record的keys中
-          const result = updateTableDataRecord(values.id, values);
-          console.log(result);
-        } else {
-          reload();
-        }
+      async function handleDelete(record: Recordable) {
+        await removeUser(record.id);
+        handleSuccess();
       }
 
-      function handleSelect(deptId = '') {
-        searchInfo.deptId = deptId;
+      function handleSuccess() {
+        reload();
+      }
+
+      function handleSelect(deptId = '0') {
+        searchInfo.organizationId = deptId;
         reload();
       }
 
@@ -128,6 +141,8 @@
         handleSelect,
         handleView,
         searchInfo,
+        registerChangePwd,
+        handleChangePwd,
       };
     },
   });

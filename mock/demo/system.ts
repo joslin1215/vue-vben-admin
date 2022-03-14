@@ -192,11 +192,13 @@ export default [
     method: 'post',
     response: ({ body }) => {
       const { account } = body || {};
-      if (account && account.indexOf('admin') !== -1) {
-        return resultError('该字段不能包含admin');
-      } else {
-        return resultSuccess(`${account} can use`);
-      }
+      return resultSuccess(`${account} can use`);
+
+      // if (account && account.indexOf('admin') !== -1) {
+      //   return resultError('该字段不能包含admin');
+      // } else {
+      //   return resultSuccess(`${account} can use`);
+      // }
     },
   },
 ] as MockMethod[];

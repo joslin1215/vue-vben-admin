@@ -10,10 +10,12 @@
             {
               icon: 'clarity:note-edit-line',
               onClick: handleEdit.bind(null, record),
+              ifShow: record.id !== 'admin',
             },
             {
               icon: 'ant-design:delete-outlined',
               color: 'error',
+              ifShow: record.id !== 'admin',
               popConfirm: {
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),
@@ -30,12 +32,13 @@
   import { defineComponent } from 'vue';
 
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getRoleListByPage } from '/@/api/demo/system';
+  import { getRoleListByPage } from '/@/api/system/system';
 
   import { useDrawer } from '/@/components/Drawer';
   import RoleDrawer from './RoleDrawer.vue';
 
   import { columns, searchFormSchema } from './role.data';
+  import { removeRole } from '/@/api/system/role/Api';
 
   export default defineComponent({
     name: 'RoleManagement',
@@ -49,6 +52,9 @@
         formConfig: {
           labelWidth: 120,
           schemas: searchFormSchema,
+        },
+        fetchSetting: {
+          listField: 'rows',
         },
         useSearchForm: true,
         showTableSetting: true,
@@ -76,8 +82,9 @@
         });
       }
 
-      function handleDelete(record: Recordable) {
-        console.log(record);
+      async function handleDelete(record: Recordable) {
+        await removeRole(record.id);
+        handleSuccess();
       }
 
       function handleSuccess() {

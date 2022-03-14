@@ -1,12 +1,18 @@
 <template>
   <div>
-    <BasicTable @register="registerTable" @fetch-success="onFetchSuccess">
+    <BasicTable @register="registerTable" @fetch-success="handleFetchSuccess">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate"> 新增菜单 </a-button>
+        <a-button type="primary" @click="handleAdd"> 新增部门 </a-button>
+        <a-button type="primary" @click="expandAll"> 展开所有 </a-button>
+        <a-button type="primary" @click="collapseAll"> 收起所有 </a-button>
       </template>
       <template #action="{ record }">
         <TableAction
           :actions="[
+            {
+              icon: 'clarity:add-line',
+              onClick: handleAdd.bind(null, record),
+            },
             {
               icon: 'clarity:note-edit-line',
               onClick: handleEdit.bind(null, record),
@@ -15,7 +21,7 @@
               icon: 'ant-design:delete-outlined',
               color: 'error',
               popConfirm: {
-                title: '是否确认删除',
+                title: '删除后，该部门的下级部门将同步删除，请确认是否继续？',
                 confirm: handleDelete.bind(null, record),
               },
             },
@@ -23,28 +29,30 @@
         />
       </template>
     </BasicTable>
-    <MenuDrawer @register="registerDrawer" @success="handleSuccess" />
+    <DeptDrawer @register="registerDrawer" @success="handleSuccess" />
   </div>
 </template>
 <script lang="ts">
   import { defineComponent, nextTick } from 'vue';
 
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getMenuList } from '/@/api/demo/system';
+  import { getDeptList } from '/@/api/system/system';
 
   import { useDrawer } from '/@/components/Drawer';
-  import MenuDrawer from './MenuDrawer.vue';
+  import DeptDrawer from './DeptDrawer.vue';
 
-  import { columns, searchFormSchema } from './menu.data';
+  import { columns, searchFormSchema } from './dept.data';
+
+  import { removeDept } from '/@/api/system/dept/Api';
 
   export default defineComponent({
-    name: 'MenuManagement',
-    components: { BasicTable, MenuDrawer, TableAction },
+    name: 'DeptManagement',
+    components: { BasicTable, DeptDrawer, TableAction },
     setup() {
       const [registerDrawer, { openDrawer }] = useDrawer();
-      const [registerTable, { reload, expandAll }] = useTable({
-        title: '菜单列表',
-        api: getMenuList,
+      const [registerTable, { reload, expandAll, collapseAll }] = useTable({
+        title: '部门列表',
+        api: getDeptList,
         columns,
         formConfig: {
           labelWidth: 120,
@@ -53,13 +61,13 @@
         isTreeTable: true,
         pagination: false,
         striped: false,
-        useSearchForm: true,
+        useSearchForm: false,
         showTableSetting: true,
         bordered: true,
         showIndexColumn: false,
         canResize: false,
         actionColumn: {
-          width: 80,
+          width: 120,
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
@@ -67,40 +75,44 @@
         },
       });
 
-      function handleCreate() {
+      function handleAdd(record: Recordable) {
         openDrawer(true, {
+          record: {
+            parentCode: record?.rawData?.id,
+          },
           isUpdate: false,
         });
       }
 
       function handleEdit(record: Recordable) {
         openDrawer(true, {
-          record,
+          record: record.rawData,
           isUpdate: true,
         });
       }
 
-      function handleDelete(record: Recordable) {
-        console.log(record);
+      async function handleDelete(record: Recordable) {
+        await removeDept(record.rawData.id);
+        handleSuccess();
       }
 
       function handleSuccess() {
         reload();
       }
-
-      function onFetchSuccess() {
-        // 演示默认展开所有表项
+      function handleFetchSuccess() {
         nextTick(expandAll);
       }
 
       return {
         registerTable,
         registerDrawer,
-        handleCreate,
         handleEdit,
         handleDelete,
         handleSuccess,
-        onFetchSuccess,
+        handleAdd,
+        expandAll,
+        collapseAll,
+        handleFetchSuccess,
       };
     },
   });

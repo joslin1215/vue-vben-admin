@@ -4,7 +4,7 @@
     @register="registerDrawer"
     showFooter
     :title="getTitle"
-    width="500px"
+    width="50%"
     @ok="handleSubmit"
   >
     <BasicForm @register="registerForm">
@@ -19,6 +19,10 @@
         />
       </template>
     </BasicForm>
+
+    <template v-if="!isUpdate" #appendFooter>
+      <a-button type="primary" @click="handleSubmit(false)">保存并添加</a-button>
+    </template>
   </BasicDrawer>
 </template>
 <script lang="ts">
@@ -28,7 +32,8 @@
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicTree, TreeItem } from '/@/components/Tree';
 
-  import { getMenuList } from '/@/api/demo/system';
+  import { getMenuList } from '/@/api/system/system';
+  import { saveRole } from '/@/api/system/role/Api';
 
   export default defineComponent({
     name: 'RoleDrawer',
@@ -62,13 +67,16 @@
 
       const getTitle = computed(() => (!unref(isUpdate) ? '新增角色' : '编辑角色'));
 
-      async function handleSubmit() {
+      async function handleSubmit(close = true) {
         try {
           const values = await validate();
           setDrawerProps({ confirmLoading: true });
-          // TODO custom api
-          console.log(values);
-          closeDrawer();
+          await saveRole(values);
+          if (close) {
+            closeDrawer();
+          } else {
+            await resetFields();
+          }
           emit('success');
         } finally {
           setDrawerProps({ confirmLoading: false });
@@ -81,6 +89,7 @@
         getTitle,
         handleSubmit,
         treeData,
+        isUpdate,
       };
     },
   });

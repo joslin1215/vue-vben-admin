@@ -13,9 +13,54 @@
   import { useLocale } from '/@/locales/useLocale';
 
   import 'dayjs/locale/zh-cn';
+  import { onMounted, onUnmounted } from 'vue';
+  import { buildShortUUID } from '/@/utils/uuid';
+  import { RouteRecordRaw, useRoute, useRouter } from 'vue-router';
+
   // support Multi-language
   const { getAntdLocale } = useLocale();
+
+  const router = useRouter();
+  const route = useRoute();
+
+  const onMessage = function (message: any) {
+    // console.log('onMessage', message);
+    const data = message.data;
+    if (data.action && data.action === 'openTab') {
+      console.log('openTab', data, router.currentRoute.value);
+      const routeName = data.url.split('.html')[0].replaceAll('/', '_').substring(1);
+      const fullUrl = 'http://localhost:8080' + data.url;
+      const r = {
+        path: data.url,
+        name: routeName,
+        component: () => import('/@/layouts/iframe/index.vue'),
+        meta: {
+          title: data.title,
+          ignoreKeepAlive: true,
+          currentActiveMenu: route?.path,
+          hideMenu: true,
+          frameSrc: fullUrl,
+        },
+      };
+
+      router.addRoute(r as unknown as RouteRecordRaw);
+      console.log(router.getRoutes());
+      router.push({ name: routeName });
+    }
+  };
+
+  onMounted(() => {
+    window.addEventListener('message', onMessage);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener('message', onMessage);
+  });
 
   // Listening to page changes and dynamically changing site titles
   useTitle();
 </script>
+
+<script lang="ts"></script>
+
+<script lang="ts"></script>

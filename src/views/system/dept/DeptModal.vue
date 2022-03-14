@@ -7,24 +7,22 @@
   import { defineComponent, ref, computed, unref } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, useForm } from '/@/components/Form/index';
-  import { accountFormSchema } from './account.data';
-  import { getDeptList } from '/@/api/demo/system';
+  import { formSchema } from './dept.data';
 
+  import { getDeptList, getRegionTree } from '/@/api/system/system';
+  import { DeptParams, RegionParams } from '/@/api/system/model/systemModel';
+  import { deptSave } from '/@/api/system/dept/Api';
   export default defineComponent({
-    name: 'AccountModal',
+    name: 'DeptModal',
     components: { BasicModal, BasicForm },
     emits: ['success', 'register'],
     setup(_, { emit }) {
       const isUpdate = ref(true);
-      const rowId = ref('');
 
-      const [registerForm, { setFieldsValue, updateSchema, resetFields, validate }] = useForm({
+      const [registerForm, { resetFields, setFieldsValue, updateSchema, validate }] = useForm({
         labelWidth: 100,
-        schemas: accountFormSchema,
+        schemas: formSchema,
         showActionButtonGroup: false,
-        actionColOptions: {
-          span: 23,
-        },
       });
 
       const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
@@ -32,36 +30,38 @@
         setModalProps({ confirmLoading: false });
         isUpdate.value = !!data?.isUpdate;
 
-        if (unref(isUpdate)) {
-          rowId.value = data.record.id;
-          setFieldsValue({
-            ...data.record,
-          });
+        if (data.record.parentCode === '0') {
+          data.record.parentCode = null;
         }
 
-        const treeData = await getDeptList();
+        // if (unref(isUpdate)) {
+        setFieldsValue({
+          ...data.record,
+        });
+        // }
+        const deptTree = await getDeptList({ status: 1 } as unknown as DeptParams);
+        const regionTree = await getRegionTree({ status: 1 } as unknown as RegionParams);
         updateSchema([
           {
-            field: 'pwd',
-            show: !unref(isUpdate),
+            field: 'parentCode',
+            componentProps: { treeData: deptTree },
           },
           {
-            field: 'dept',
-            componentProps: { treeData },
+            field: 'regionId',
+            componentProps: { treeData: regionTree },
           },
         ]);
       });
 
-      const getTitle = computed(() => (!unref(isUpdate) ? '新增账号' : '编辑账号'));
+      const getTitle = computed(() => (!unref(isUpdate) ? '新增部门' : '编辑部门'));
 
       async function handleSubmit() {
         try {
           const values = await validate();
           setModalProps({ confirmLoading: true });
-          // TODO custom api
-          console.log(values);
+          await deptSave(values);
           closeModal();
-          emit('success', { isUpdate: unref(isUpdate), values: { ...values, id: rowId.value } });
+          emit('success');
         } finally {
           setModalProps({ confirmLoading: false });
         }
