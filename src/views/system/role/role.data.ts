@@ -1,8 +1,7 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
+import { BasicColumn, FormSchema } from '/@/components/Table';
 import { h } from 'vue';
 import { Switch } from 'ant-design-vue';
-import { setRoleStatus } from '/@/api/system/system';
+import { setRoleStatus } from '/@/api/system/role/Api';
 import { useMessage } from '/@/hooks/web/useMessage';
 
 export const columns: BasicColumn[] = [
@@ -91,7 +90,6 @@ export const formSchema: FormSchema[] = [
     label: '角色名称',
     required: true,
     component: 'Input',
-    show: false,
   },
   {
     field: 'status',
@@ -109,11 +107,5 @@ export const formSchema: FormSchema[] = [
     label: '备注',
     field: 'remark',
     component: 'InputTextArea',
-  },
-  {
-    label: ' ',
-    field: 'menu',
-    slot: 'menu',
-    component: 'Input',
   },
 ];

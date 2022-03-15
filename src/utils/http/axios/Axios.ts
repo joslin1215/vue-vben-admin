@@ -166,6 +166,14 @@ export class VAxios {
       !Reflect.has(config, 'data') ||
       config.method?.toUpperCase() === RequestEnum.GET
     ) {
+      // 中文转义
+      if (config.url && config.params) {
+        let url = config.url;
+        url += url.indexOf('?') == -1 ? '?' : '&';
+        url += qs.stringify(config.params, { encode: true });
+        config.url = url;
+        config.params = {};
+      }
       return config;
     }
 

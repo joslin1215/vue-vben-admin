@@ -36,14 +36,12 @@
   import { defineComponent, nextTick } from 'vue';
 
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getDeptList } from '/@/api/system/system';
-
   import { useDrawer } from '/@/components/Drawer';
   import DeptDrawer from './DeptDrawer.vue';
 
   import { columns, searchFormSchema } from './dept.data';
 
-  import { removeDept } from '/@/api/system/dept/Api';
+  import { removeDept, getDeptList } from '/@/api/system/dept/Api';
 
   export default defineComponent({
     name: 'DeptManagement',

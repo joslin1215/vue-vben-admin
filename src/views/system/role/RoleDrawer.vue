@@ -7,18 +7,7 @@
     width="50%"
     @ok="handleSubmit"
   >
-    <BasicForm @register="registerForm">
-      <template #menu="{ model, field }">
-        <BasicTree
-          v-model:value="model[field]"
-          :treeData="treeData"
-          :fieldNames="{ title: 'menuName', key: 'id' }"
-          checkable
-          toolbar
-          title="菜单分配"
-        />
-      </template>
-    </BasicForm>
+    <BasicForm @register="registerForm" />
 
     <template v-if="!isUpdate" #appendFooter>
       <a-button type="primary" @click="handleSubmit(false)">保存并添加</a-button>
@@ -30,18 +19,15 @@
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from './role.data';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
-  import { BasicTree, TreeItem } from '/@/components/Tree';
 
-  import { getMenuList } from '/@/api/system/system';
   import { saveRole } from '/@/api/system/role/Api';
 
   export default defineComponent({
     name: 'RoleDrawer',
-    components: { BasicDrawer, BasicForm, BasicTree },
+    components: { BasicDrawer, BasicForm },
     emits: ['success', 'register'],
     setup(_, { emit }) {
       const isUpdate = ref(true);
-      const treeData = ref<TreeItem[]>([]);
 
       const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
         labelWidth: 90,
@@ -52,10 +38,7 @@
       const [registerDrawer, { setDrawerProps, closeDrawer }] = useDrawerInner(async (data) => {
         resetFields();
         setDrawerProps({ confirmLoading: false });
-        // 需要在setFieldsValue之前先填充treeData，否则Tree组件可能会报key not exist警告
-        if (unref(treeData).length === 0) {
-          treeData.value = (await getMenuList()) as any as TreeItem[];
-        }
+
         isUpdate.value = !!data?.isUpdate;
 
         if (unref(isUpdate)) {
@@ -88,7 +71,6 @@
         registerForm,
         getTitle,
         handleSubmit,
-        treeData,
         isUpdate,
       };
     },

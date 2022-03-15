@@ -40,7 +40,7 @@
   import { defineComponent, reactive } from 'vue';
 
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getAccountList } from '/@/api/system/system';
+  import { getUserList } from '/@/api/system/account/Api';
   import { PageWrapper } from '/@/components/Page';
   import DeptTree from './DeptTree.vue';
 
@@ -65,7 +65,7 @@
       const searchInfo = reactive<Recordable>({});
       const [registerTable, { reload }] = useTable({
         title: '账号列表',
-        api: getAccountList,
+        api: getUserList,
         rowKey: 'id',
         columns,
         formConfig: {

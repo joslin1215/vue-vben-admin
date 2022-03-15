@@ -18,8 +18,8 @@
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { accountFormSchema } from './account.data';
-  import { isUserExist, saveUser } from '/@/api/system/account/Api';
-  import { getDeptList } from '/@/api/system/system';
+  import { checkUserExists, saveUser } from '/@/api/system/account/Api';
+  import { getDeptList } from '/@/api/system/dept/Api';
 
   export default defineComponent({
     name: 'AccountDrawer',
@@ -98,7 +98,7 @@
                       const params = {};
                       params['name'] = value;
                       params['id'] = values['id'];
-                      isUserExist(params)
+                      checkUserExists(params)
                         .then(() => resolve())
                         .catch(() => {
                           reject('姓名已被使用');

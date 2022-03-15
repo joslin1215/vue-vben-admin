@@ -36,13 +36,12 @@
   import { defineComponent, nextTick } from 'vue';
 
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getRegionTree } from '/@/api/system/system';
 
   import { useDrawer } from '/@/components/Drawer';
   import RegionDrawer from './RegionDrawer.vue';
 
   import { columns, searchFormSchema } from './region.data';
-  import { removeRegion } from '/@/api/system/region/Api';
+  import { removeRegion, getRegionTree } from '/@/api/system/region/Api';
 
   export default defineComponent({
     name: 'RegionManagement',

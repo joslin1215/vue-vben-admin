@@ -122,10 +122,6 @@ export const formSchema = (): FormSchema[] => {
       required: true,
       componentProps: {
         defaultExpandAll: true,
-        // api: getRegionTree,
-        // params: {
-        //   status: 1,
-        // },
         fieldNames: {
           label: 'name',
           key: 'id',
@@ -133,7 +129,6 @@ export const formSchema = (): FormSchema[] => {
         },
         getPopupContainer: () => document.body,
       },
-      // required: true,
     },
     {
       field: 'treeSort',

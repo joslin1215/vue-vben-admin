@@ -19,8 +19,8 @@
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from './dept.data';
 
-  import { getDeptList, getRegionTree } from '/@/api/system/system';
-  import { DeptParams, RegionParams } from '/@/api/system/model/systemModel';
+  import { getDeptList, DeptParams } from '/@/api/system/dept/Api';
+  import { RegionParams, getRegionTree } from '/@/api/system/region/Api';
   import { deptSave } from '/@/api/system/dept/Api';
   import bus from '/@/utils/bus';
   export default defineComponent({
@@ -55,8 +55,11 @@
       });
 
       async function doUpdateSchema() {
-        const deptTree = await getDeptList({ status: 1 } as unknown as DeptParams);
-        const regionTree = await getRegionTree({ status: 1 } as unknown as RegionParams);
+        const deptTree = await getDeptList({ status: 1, thin: true } as unknown as DeptParams);
+        const regionTree = await getRegionTree({
+          status: 1,
+          thin: true,
+        } as unknown as RegionParams);
         updateSchema([
           {
             field: 'parentCode',

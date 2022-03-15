@@ -16,7 +16,7 @@
   import { formSchema } from './menu.data';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
 
-  import { getMenuList } from '/@/api/system/system';
+  import { getAllMenuList } from '/@/api/system/menu/Api';
 
   export default defineComponent({
     name: 'MenuDrawer',
@@ -42,7 +42,7 @@
             ...data.record,
           });
         }
-        const treeData = await getMenuList();
+        const treeData = await getAllMenuList();
         updateSchema({
           field: 'parentMenu',
           componentProps: { treeData },

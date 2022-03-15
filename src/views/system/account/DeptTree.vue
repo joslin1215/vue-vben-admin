@@ -14,11 +14,10 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, nextTick, onMounted, ref } from 'vue';
+  import { defineComponent, onMounted, ref } from 'vue';
 
   import { BasicTree, TreeItem } from '/@/components/Tree';
-  import { getDeptList } from '/@/api/system/system';
-  import { DeptParams } from '/@/api/system/model/systemModel';
+  import { getDeptList, DeptParams } from '/@/api/system/dept/Api';
   import bus from '/@/utils/bus';
 
   export default defineComponent({

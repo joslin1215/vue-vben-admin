@@ -13,6 +13,12 @@
               ifShow: record.id !== 'admin',
             },
             {
+              icon: 'ant-design:unlock-outline',
+              tooltip: '分配权限',
+              onClick: handlePermission.bind(null, record),
+              ifShow: record.id !== 'admin',
+            },
+            {
               icon: 'ant-design:delete-outlined',
               color: 'error',
               ifShow: record.id !== 'admin',
@@ -26,25 +32,27 @@
       </template>
     </BasicTable>
     <RoleDrawer @register="registerDrawer" @success="handleSuccess" />
+    <RolePermissionDrawer @register="registerPermissionDrawer" />
   </div>
 </template>
 <script lang="ts">
   import { defineComponent } from 'vue';
 
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getRoleListByPage } from '/@/api/system/system';
+  import { getRoleListByPage, removeRole } from '/@/api/system/role/Api';
 
   import { useDrawer } from '/@/components/Drawer';
   import RoleDrawer from './RoleDrawer.vue';
 
   import { columns, searchFormSchema } from './role.data';
-  import { removeRole } from '/@/api/system/role/Api';
+  import RolePermissionDrawer from '/@/views/system/role/RolePermissionDrawer.vue';
 
   export default defineComponent({
     name: 'RoleManagement',
-    components: { BasicTable, RoleDrawer, TableAction },
+    components: { RolePermissionDrawer, BasicTable, RoleDrawer, TableAction },
     setup() {
       const [registerDrawer, { openDrawer }] = useDrawer();
+      const [registerPermissionDrawer, { openDrawer: openPermissionDrawer }] = useDrawer();
       const [registerTable, { reload }] = useTable({
         title: '角色列表',
         api: getRoleListByPage,
@@ -61,7 +69,7 @@
         bordered: true,
         showIndexColumn: false,
         actionColumn: {
-          width: 80,
+          width: 120,
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
@@ -91,13 +99,21 @@
         reload();
       }
 
+      function handlePermission(record: Recordable) {
+        openPermissionDrawer(true, {
+          record,
+        });
+      }
+
       return {
         registerTable,
         registerDrawer,
+        registerPermissionDrawer,
         handleCreate,
         handleEdit,
         handleDelete,
         handleSuccess,
+        handlePermission,
       };
     },
   });

@@ -16,6 +16,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'icon',
     width: 50,
     customRender: ({ record }) => {
+      // @ts-ignore
       return h(Icon, { icon: record.icon });
     },
   },
@@ -38,6 +39,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'status',
     width: 80,
     customRender: ({ record }) => {
+      // @ts-ignore
       const status = record.status;
       const enable = ~~status === 0;
       const color = enable ? 'green' : 'red';

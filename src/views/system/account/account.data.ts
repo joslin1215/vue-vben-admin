@@ -1,7 +1,7 @@
-import { getAllRoleList } from '/@/api/system/system';
+import { getAllRoleList } from '/@/api/system/role/Api';
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
-import { isUserExist } from '/@/api/system/account/Api';
+import { checkUserExists } from '/@/api/system/account/Api';
 
 export const columns: BasicColumn[] = [
   {
@@ -91,7 +91,7 @@ export const accountFormSchema: FormSchema[] = [
             }
             const params = {};
             params[_['field']] = value;
-            isUserExist(params)
+            checkUserExists(params)
               .then(() => resolve())
               .catch(() => {
                 reject('工号已被使用');
@@ -135,7 +135,7 @@ export const accountFormSchema: FormSchema[] = [
             }
             const params = {};
             params[_['field']] = value;
-            isUserExist(params)
+            checkUserExists(params)
               .then(() => resolve())
               .catch(() => {
                 reject('姓名已被使用');
@@ -195,7 +195,7 @@ export const accountFormSchema: FormSchema[] = [
             }
             const params = {};
             params[_['field']] = value;
-            isUserExist(params)
+            checkUserExists(params)
               .then(() => resolve())
               .catch(() => {
                 reject('登录账号已被使用');

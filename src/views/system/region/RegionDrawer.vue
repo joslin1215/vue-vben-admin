@@ -18,8 +18,7 @@
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from './region.data';
 
-  import { saveRegion } from '/@/api/system/region/Api';
-  import { getRegionTree } from '/@/api/system/system';
+  import { saveRegion, getRegionTree } from '/@/api/system/region/Api';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
 
   export default defineComponent({
@@ -56,7 +55,7 @@
       const getTitle = computed(() => (!unref(isUpdate) ? '新增区域' : '编辑区域'));
 
       async function doUpdateSchema(data) {
-        const treeData = await getRegionTree({ status: 1 });
+        const treeData = await getRegionTree({ status: 1, thin: true });
         await updateSchema({
           field: 'parentCode',
           componentProps: { treeData },
