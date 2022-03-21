@@ -2,7 +2,7 @@
   <div>
     <BasicTable @register="registerTable">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate"> 新增角色 </a-button>
+        <a-button type="primary" @click="handleCreate"> 新增角色</a-button>
       </template>
       <template #action="{ record }">
         <TableAction
@@ -30,6 +30,13 @@
           ]"
         />
       </template>
+      <template #status="{ record }">
+        <span>
+          <a>Action 一 {{ record.id }}</a>
+          <a-divider type="vertical" />
+          <a>Delete</a>
+        </span>
+      </template>
     </BasicTable>
     <RoleDrawer @register="registerDrawer" @success="handleSuccess" />
     <RolePermissionDrawer @register="registerPermissionDrawer" />
@@ -38,7 +45,7 @@
 <script lang="ts">
   import { defineComponent } from 'vue';
 
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
+  import { BasicTable, TableAction, useTable } from '/@/components/Table';
   import { getRoleListByPage, removeRole } from '/@/api/system/role/Api';
 
   import { useDrawer } from '/@/components/Drawer';

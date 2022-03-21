@@ -1,5 +1,5 @@
 import { Persistent, BasicKeys } from '/@/utils/cache/persistent';
-import { CacheTypeEnum } from '/@/enums/cacheEnum';
+import { CacheTypeEnum, FINGERPRINT_KEY } from '/@/enums/cacheEnum';
 import projectSetting from '/@/settings/projectSetting';
 import { TOKEN_KEY } from '/@/enums/cacheEnum';
 
@@ -23,4 +23,13 @@ export function setAuthCache(key: BasicKeys, value) {
 export function clearAuthCache(immediate = true) {
   const fn = isLocal ? Persistent.clearLocal : Persistent.clearSession;
   return fn(immediate);
+}
+
+export function setFingerprint(value: string) {
+  return setAuthCache(FINGERPRINT_KEY, value);
+}
+
+export function getFingerprint() {
+  const fingerprint = getAuthCache(FINGERPRINT_KEY);
+  return fingerprint;
 }

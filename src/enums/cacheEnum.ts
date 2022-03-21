@@ -1,6 +1,10 @@
 // token key
 export const TOKEN_KEY = 'TOKEN__';
 
+// fingerprint key
+
+export const FINGERPRINT_KEY = 'FINGERPRINT__';
+
 export const LOCALE_KEY = 'LOCALE__';
 
 // user info key

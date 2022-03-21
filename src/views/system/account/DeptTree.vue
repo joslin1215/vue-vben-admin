@@ -5,8 +5,10 @@
       :defaultExpandAll="true"
       toolbar
       search
+      :setSelectedKeys="setSelectedKeys"
       @reload="handleReload"
       :clickRowToExpand="false"
+      :selectedKeys="selectedKeys"
       :treeData="treeData"
       :fieldNames="{ key: 'id', title: 'name' }"
       @select="handleSelect"
@@ -14,10 +16,10 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, onMounted, ref } from 'vue';
+  import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
 
   import { BasicTree, TreeItem } from '/@/components/Tree';
-  import { getDeptList, DeptParams } from '/@/api/system/dept/Api';
+  import { DeptParams, getDeptList } from '/@/api/system/dept/Api';
   import bus from '/@/utils/bus';
 
   export default defineComponent({
@@ -26,8 +28,13 @@
 
     emits: ['select'],
     setup(_, { emit }) {
+      const selectedKeys = ref<string[]>([]);
       bus.on('reloadDeptTree', async () => {
         await handleReload();
+      });
+
+      bus.on('reset-user-table-search', async () => {
+        selectedKeys.value = [];
       });
 
       const treeData = ref<TreeItem[]>([]);
@@ -49,7 +56,13 @@
       onMounted(() => {
         fetch();
       });
-      return { treeData, handleSelect, handleReload };
+
+      onUnmounted(() => {
+        bus.off('reloadDeptTree');
+        bus.off('reset-user-table-search');
+      });
+
+      return { treeData, selectedKeys, handleSelect, handleReload };
     },
   });
 </script>

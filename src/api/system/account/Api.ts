@@ -1,5 +1,6 @@
 import { http } from '/@/utils/http/axios';
 import { BasicFetchResult, BasicPageParams } from '/@/api/model/baseModel';
+
 enum Api {
   SaveUserUrl = '/sys/user/save',
   RemoveUserUrl = '/sys/user/remove/',
@@ -31,7 +32,7 @@ export type UserChangePwdParam = {
   rawPassword: string;
 };
 
-export type checkExistParam = {
+export type CheckUserExistParam = {
   employeeId?: string;
   account?: string;
   name?: string;
@@ -68,7 +69,7 @@ export const saveUser = (params?: UserSaveParam) =>
 
 export const removeUser = (id: string) => http.delete<any>({ url: Api.RemoveUserUrl + id });
 
-export const checkUserExists = (params: checkExistParam) =>
+export const checkUserExists = (params: CheckUserExistParam) =>
   http.get({ url: Api.CheckUserExistsUrl, params }, { errorMessageMode: 'none' });
 
 export const changePassword = (params: UserChangePwdParam) =>

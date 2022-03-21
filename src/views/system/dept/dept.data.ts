@@ -1,9 +1,12 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
-import { h, ref } from 'vue';
+import { BasicColumn, FormSchema } from '/@/components/Table';
+import { h } from 'vue';
 import { Tag } from 'ant-design-vue';
-import { TreeActionType } from '/@/components/Tree';
+import { getDeptList } from '/@/api/system/dept/Api';
+import { getRegionTree } from '/@/api/system/region/Api';
 
+/**
+ * 部门列表列配置
+ */
 export const columns: BasicColumn[] = [
   {
     title: '部门名称',
@@ -13,6 +16,7 @@ export const columns: BasicColumn[] = [
   {
     title: '排序',
     dataIndex: ['rawData', 'treeSort'],
+    ifShow: false,
     width: 50,
   },
   {
@@ -40,16 +44,19 @@ export const columns: BasicColumn[] = [
   },
 ];
 
+/**
+ * 部门列表搜索表单配置
+ */
 export const searchFormSchema: FormSchema[] = [
   {
-    field: 'name',
     label: '部门名称',
+    field: 'name',
     component: 'Input',
     colProps: { span: 8 },
   },
   {
-    field: 'status',
     label: '状态',
+    field: 'status',
     component: 'Select',
     componentProps: {
       options: [
@@ -61,99 +68,118 @@ export const searchFormSchema: FormSchema[] = [
   },
 ];
 
-export const formSchema = (): FormSchema[] => {
-  const asyncExpandTreeRef = ref<Nullable<TreeActionType>>(null);
-  return [
-    {
-      field: 'id',
-      label: '部门ID',
-      component: 'Input',
-      show: false,
-    },
-    {
-      field: 'name',
-      label: '部门名称',
-      component: 'Input',
-      required: true,
-      rules: [
-        {
-          required: true,
-        },
-        {
-          validator: (_, value) => {
-            return new Promise((resolve, reject) => {
-              if (!value) {
-                resolve();
-              }
-              if (value.indexOf(',') > -1) {
-                reject('不能包含【,】字符');
-              }
+/**
+ * 添加、编辑部门表单配置
+ */
+export const formSchema: FormSchema[] = [
+  {
+    label: '部门ID',
+    field: 'id',
+    component: 'Input',
+    show: false,
+  },
+  {
+    label: '部门名称',
+    field: 'name',
+    component: 'Input',
+    required: true,
+    rules: [
+      {
+        required: true,
+        message: '请输入部门名称',
+      },
+      {
+        max: 128,
+        message: '请输入正确的部门名称',
+      },
+      {
+        whitespace: true,
+        message: '请输入正确的部门名称',
+      },
+      {
+        validator: (_, value) => {
+          return new Promise((resolve, reject) => {
+            if (!value) {
               resolve();
-            });
-          },
+            }
+            if (value.indexOf(',') > -1) {
+              reject('不能包含【,】字符');
+            }
+            resolve();
+          });
         },
+      },
+    ],
+  },
+  {
+    label: '上级部门',
+    field: 'parentCode',
+    component: 'ApiTreeSelect',
+    componentProps: {
+      defaultExpandAll: true,
+      treeDefaultExpandAll: true,
+      api: getDeptList,
+      params: {
+        status: 1,
+        thin: true,
+      },
+      fieldNames: {
+        label: 'name',
+        key: 'id',
+        value: 'id',
+      },
+      getPopupContainer: () => document.body,
+    },
+    // required: true,
+  },
+  {
+    label: '负责区域',
+    field: 'regionId',
+    component: 'ApiTreeSelect',
+    required: true,
+    componentProps: {
+      defaultExpandAll: true,
+      treeDefaultExpandAll: true,
+      api: getRegionTree,
+      params: {
+        status: 1,
+        thin: true,
+      },
+      fieldNames: {
+        label: 'name',
+        key: 'id',
+        value: 'id',
+      },
+      getPopupContainer: () => document.body,
+    },
+  },
+  {
+    label: '排序',
+    field: 'treeSort',
+    component: 'InputNumber',
+    defaultValue: 50,
+    required: true,
+    show: false,
+  },
+  {
+    label: '状态',
+    field: 'status',
+    component: 'RadioButtonGroup',
+    defaultValue: 1,
+    componentProps: {
+      options: [
+        { label: '启用', value: 1 },
+        { label: '停用', value: 0 },
       ],
     },
-    {
-      field: 'parentCode',
-      label: '上级部门',
-      component: 'TreeSelect',
-      componentProps: {
-        defaultExpandAll: true,
-        // api: getDeptList,
-        // params: {
-        //   status: 1,
-        // },
-        fieldNames: {
-          label: 'name',
-          key: 'id',
-          value: 'id',
-        },
-        ref: asyncExpandTreeRef,
-        onOptionsChange: () => {},
-        getPopupContainer: () => document.body,
-      },
-      // required: true,
-    },
-    {
-      field: 'regionId',
-      label: '负责区域',
-      component: 'TreeSelect',
-      required: true,
-      componentProps: {
-        defaultExpandAll: true,
-        fieldNames: {
-          label: 'name',
-          key: 'id',
-          value: 'id',
-        },
-        getPopupContainer: () => document.body,
-      },
-    },
-    {
-      field: 'treeSort',
-      label: '排序',
-      component: 'InputNumber',
-      defaultValue: 50,
-      required: true,
-    },
-    {
-      field: 'status',
-      label: '状态',
-      component: 'RadioButtonGroup',
-      defaultValue: 1,
-      componentProps: {
-        options: [
-          { label: '启用', value: 1 },
-          { label: '停用', value: 0 },
-        ],
-      },
-      required: true,
-    },
-    {
-      label: '备注',
-      field: 'remark',
-      component: 'InputTextArea',
-    },
-  ];
+    required: true,
+  },
+  {
+    label: '备注',
+    field: 'remark',
+    component: 'InputTextArea',
+  },
+];
+export const getFormSchema = (): FormSchema[] => {
+  return formSchema;
 };

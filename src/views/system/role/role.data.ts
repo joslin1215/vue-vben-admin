@@ -18,6 +18,7 @@ export const columns: BasicColumn[] = [
       if (!Reflect.has(record, 'pendingStatus')) {
         record.pendingStatus = false;
       }
+
       return record.id === 'admin'
         ? record.status === 1
           ? '已启用'
@@ -90,6 +91,20 @@ export const formSchema: FormSchema[] = [
     label: '角色名称',
     required: true,
     component: 'Input',
+    rules: [
+      {
+        required: true,
+        message: '请输入角色名称',
+      },
+      {
+        max: 128,
+        message: '请输入正确的角色名称',
+      },
+      {
+        whitespace: true,
+        message: '请输入正确的角色名称',
+      },
+    ],
   },
   {
     field: 'status',
@@ -107,5 +122,15 @@ export const formSchema: FormSchema[] = [
     label: '备注',
     field: 'remark',
     component: 'InputTextArea',
+    rules: [
+      {
+        max: 256,
+        message: '请输入正确的备注',
+      },
+      {
+        whitespace: true,
+        message: '请输入正确的备注',
+      },
+    ],
   },
 ];

@@ -14,7 +14,6 @@
 
   import 'dayjs/locale/zh-cn';
   import { onMounted, onUnmounted } from 'vue';
-  import { buildShortUUID } from '/@/utils/uuid';
   import { RouteRecordRaw, useRoute, useRouter } from 'vue-router';
 
   // support Multi-language
@@ -51,6 +50,14 @@
 
   onMounted(() => {
     window.addEventListener('message', onMessage);
+    // const fpPromise = FingerprintJS.load();
+    // (async () => {
+    //   const fp = await fpPromise;
+    //   const result = await fp.get();
+    //   console.info('Fingerprint', result);
+    //   setFingerprint(result.visitorId);
+    //   console.log(getFingerprint());
+    // })();
   });
 
   onUnmounted(() => {

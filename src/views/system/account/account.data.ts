@@ -1,8 +1,10 @@
+import { BasicColumn, FormSchema } from '/@/components/Table';
 import { getAllRoleList } from '/@/api/system/role/Api';
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
-import { checkUserExists } from '/@/api/system/account/Api';
+import { getDeptList } from '/@/api/system/dept/Api';
 
+/**
+ * 用户列表列配置
+ */
 export const columns: BasicColumn[] = [
   {
     title: '账号',
@@ -31,30 +33,33 @@ export const columns: BasicColumn[] = [
   },
 ];
 
+/**
+ * 用户列表搜索表单配置
+ */
 export const searchFormSchema: FormSchema[] = [
   {
-    field: 'account',
     label: '账号',
+    field: 'account',
     component: 'Input',
-    colProps: { span: 4 },
+    colProps: { span: 5 },
   },
   {
-    field: 'name',
     label: '姓名',
+    field: 'name',
     component: 'Input',
-    colProps: { span: 4 },
+    colProps: { span: 5 },
   },
   {
-    field: 'mobilePhone',
     label: '手机号',
+    field: 'mobilePhone',
     component: 'Input',
-    colProps: { span: 4 },
+    colProps: { span: 5 },
   },
   {
     label: '角色',
     field: 'roleId',
     component: 'ApiSelect',
-    colProps: { span: 4 },
+    colProps: { span: 5 },
     componentProps: {
       api: getAllRoleList,
       params: { status: 1 },
@@ -65,17 +70,20 @@ export const searchFormSchema: FormSchema[] = [
   },
 ];
 
+/**
+ * 添加、编辑用户表单配置，动态校验规则在页面实现
+ */
 export const accountFormSchema: FormSchema[] = [
   {
-    field: 'id',
     label: 'ID',
+    field: 'id',
     component: 'Input',
     show: false,
     dynamicDisabled: true,
   },
   {
-    field: 'employeeId',
     label: '工号',
+    field: 'employeeId',
     component: 'Input',
     colProps: { span: 11 },
     rules: [
@@ -84,30 +92,25 @@ export const accountFormSchema: FormSchema[] = [
         message: '请输入工号',
       },
       {
-        validator(_, value) {
-          return new Promise((resolve, reject) => {
-            if (!value) {
-              resolve();
-            }
-            const params = {};
-            params[_['field']] = value;
-            checkUserExists(params)
-              .then(() => resolve())
-              .catch(() => {
-                reject('工号已被使用');
-              });
-          });
-        },
+        max: 16,
+        message: '请输入正确的工号',
+      },
+      {
+        whitespace: true,
+        message: '请输入正确的工号',
       },
     ],
   },
   {
-    field: 'organizationId',
     label: '部门',
+    field: 'organizationId',
     colProps: { span: 11 },
-    component: 'TreeSelect',
+    component: 'ApiTreeSelect',
     componentProps: {
       defaultExpandAll: true,
+      treeDefaultExpandAll: true,
+      api: getDeptList,
+      params: { status: 1, thin: true },
       fieldNames: {
         label: 'name',
         key: 'id',
@@ -118,8 +121,8 @@ export const accountFormSchema: FormSchema[] = [
     required: true,
   },
   {
-    field: 'name',
     label: '姓名',
+    field: 'name',
     colProps: { span: 11 },
     component: 'Input',
     rules: [
@@ -128,29 +131,35 @@ export const accountFormSchema: FormSchema[] = [
         message: '请输入姓名',
       },
       {
-        validator(_, value) {
-          return new Promise((resolve, reject) => {
-            if (!value) {
-              resolve();
-            }
-            const params = {};
-            params[_['field']] = value;
-            checkUserExists(params)
-              .then(() => resolve())
-              .catch(() => {
-                reject('姓名已被使用');
-              });
-          });
-        },
+        max: 32,
+        message: '请输入正确的姓名',
+      },
+      {
+        whitespace: true,
+        message: '请输入正确的姓名',
       },
     ],
   },
   {
-    field: 'mobilePhone',
     label: '联系电话',
+    field: 'mobilePhone',
     component: 'Input',
     colProps: { span: 11 },
     required: true,
+    rules: [
+      {
+        required: true,
+        message: '请输入联系电话',
+      },
+      {
+        whitespace: true,
+        message: '请输入正确的联系电话',
+      },
+      {
+        max: 16,
+        message: '请输入正确的联系电话',
+      },
+    ],
   },
   {
     label: '角色',
@@ -176,92 +185,139 @@ export const accountFormSchema: FormSchema[] = [
         required: true,
         type: 'email',
       },
+      {
+        max: 32,
+        message: '请输入正确的邮箱',
+      },
+      {
+        whitespace: true,
+        message: '请输入正确的邮箱',
+      },
     ],
   },
   {
-    field: 'account',
     label: '登录账号',
+    field: 'account',
     component: 'Input',
     colProps: { span: 11 },
     rules: [
       {
         required: true,
+        message: '请输入登录账号',
       },
       {
-        validator(_, value) {
-          return new Promise((resolve, reject) => {
-            if (!value) {
-              resolve();
-            }
-            const params = {};
-            params[_['field']] = value;
-            checkUserExists(params)
-              .then(() => resolve())
-              .catch(() => {
-                reject('登录账号已被使用');
-              });
-          });
-        },
+        max: 32,
+        message: '请输入正确的登录名',
+      },
+      {
+        whitespace: true,
+        message: '请输入正确的登录名',
       },
     ],
   },
   {
-    field: 'password',
     label: '密码',
+    field: 'password',
     colProps: { span: 11 },
     component: 'InputPassword',
     required: true,
+    rules: [
+      {
+        required: true,
+        message: '请输入密码',
+      },
+      {
+        pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[a-zA-Zd]{8,16}$/),
+        message: '请保证密码含字母（大小写）、数字及符号组合8~16位',
+      },
+    ],
   },
-
   {
-    field: 'password1',
     label: '确认密码',
+    field: 'password1',
     colProps: { span: 11 },
     component: 'InputPassword',
+    rules: [
+      {
+        required: true,
+        message: '请输入确认密码',
+      },
+      {
+        pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[a-zA-Zd]{8,16}$/),
+        message: '请保证密码含字母（大小写）、数字及符号组合8~16位',
+      },
+    ],
   },
   {
     label: '备注',
     field: 'remark',
     component: 'InputTextArea',
     colProps: { span: 22 },
+    rules: [
+      {
+        max: 1024,
+        message: '请输入正确的备注',
+      },
+    ],
   },
 ];
 
+/**
+ * 修改密码表单配置
+ */
 export const changePwdFormSchema: FormSchema[] = [
   {
-    field: 'id',
     label: 'ID',
+    field: 'id',
     component: 'Input',
     show: false,
     dynamicDisabled: true,
   },
   {
-    field: 'account',
     label: '登录账号',
+    field: 'account',
     component: 'Input',
     colProps: { span: 11 },
     dynamicDisabled: true,
   },
   {
-    field: 'name',
     label: '姓名',
+    field: 'name',
     colProps: { span: 11 },
     component: 'Input',
     dynamicDisabled: true,
   },
-
   {
-    field: 'password',
     label: '新密码',
+    field: 'password',
     colProps: { span: 11 },
     component: 'InputPassword',
     required: true,
+    rules: [
+      {
+        required: true,
+        message: '请输入密码',
+      },
+      {
+        pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[a-zA-Zd]{8,16}$/),
+        message: '请保证密码含字母（大小写）、数字及符号组合8~16位',
+      },
+    ],
   },
-
   {
-    field: 'password1',
     label: '确认密码',
+    field: 'password1',
     colProps: { span: 11 },
     component: 'InputPassword',
+    rules: [
+      {
+        required: true,
+        message: '请输入确认密码',
+      },
+      {
+        pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[a-zA-Zd]{8,16}$/),
+        message: '请保证密码含字母（大小写）、数字及符号组合8~16位',
+      },
+    ],
   },
 ];

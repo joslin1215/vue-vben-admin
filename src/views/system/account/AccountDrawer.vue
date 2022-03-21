@@ -14,12 +14,11 @@
   </BasicDrawer>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, computed, unref } from 'vue';
+  import { computed, defineComponent, ref, unref } from 'vue';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
-  import { BasicForm, useForm } from '/@/components/Form/index';
+  import { BasicForm, RenderCallbackParams, Rule, useForm } from '/@/components/Form/index';
   import { accountFormSchema } from './account.data';
-  import { checkUserExists, saveUser } from '/@/api/system/account/Api';
-  import { getDeptList } from '/@/api/system/dept/Api';
+  import { CheckUserExistParam, checkUserExists, saveUser } from '/@/api/system/account/Api';
 
   export default defineComponent({
     name: 'AccountDrawer',
@@ -27,7 +26,7 @@
     emits: ['success', 'register'],
     setup(_, { emit }) {
       const isUpdate = ref(true);
-      const rowId = ref('');
+      const rowId = ref<string>('');
 
       const [
         registerForm,
@@ -42,7 +41,7 @@
       });
 
       const [registerModal, { setDrawerProps, closeDrawer }] = useDrawerInner(async (data) => {
-        resetFields();
+        await resetFields();
         setDrawerProps({ confirmLoading: false, maskClosable: false });
         isUpdate.value = !!data?.isUpdate;
         if (unref(isUpdate)) {
@@ -55,59 +54,26 @@
           if (data.record.roleObjs && data.record.roleObjs.length > 0) {
             data.record['roleId'] = data.record.roleObjs[0].id;
           }
-
-          setFieldsValue({
-            ...data.record,
-          });
         }
 
-        const depts = await getDeptList({ status: 1 });
+        await setFieldsValue({
+          ...data.record,
+        });
 
-        updateSchema([
-          {
-            field: 'organizationId',
-            componentProps: {
-              treeData: depts,
-            },
-          },
+        await updateSchema([
           {
             field: 'employeeId',
             dynamicDisabled: unref(isUpdate),
-            dynamicRules: ({ schema }) => {
-              return unref(isUpdate) ? [] : schema.rules || [];
-            },
+            dynamicRules: dynamicRulesWithCheckUserExists,
           },
           {
             field: 'account',
             dynamicDisabled: unref(isUpdate),
-            dynamicRules: ({ schema }) => {
-              return unref(isUpdate) ? [] : schema.rules || [];
-            },
+            dynamicRules: dynamicRulesWithCheckUserExists,
           },
           {
             field: 'name',
-            dynamicRules: ({ values }) => {
-              return [
-                { required: true, message: '请输入姓名' },
-                {
-                  validator: (_, value) => {
-                    return new Promise((resolve, reject) => {
-                      if (!value) {
-                        resolve();
-                      }
-                      const params = {};
-                      params['name'] = value;
-                      params['id'] = values['id'];
-                      checkUserExists(params)
-                        .then(() => resolve())
-                        .catch(() => {
-                          reject('姓名已被使用');
-                        });
-                    });
-                  },
-                },
-              ];
-            },
+            dynamicRules: dynamicRulesWithCheckUserExists,
           },
           {
             field: 'password',
@@ -138,6 +104,34 @@
           },
         ]);
       });
+
+      function dynamicRulesWithCheckUserExists(renderCallbackParams: RenderCallbackParams): Rule[] {
+        const { schema } = renderCallbackParams;
+        const { field, rules } = schema;
+        const oldRules = rules || [];
+        const dynaRules = [
+          ...oldRules,
+          {
+            validator: (_, value) => {
+              return new Promise<void>((resolve, reject) => {
+                if (!value) {
+                  resolve();
+                }
+
+                const params: CheckUserExistParam = {};
+                params[field] = value;
+                params['id'] = unref(rowId);
+                checkUserExists(params)
+                  .then(() => resolve())
+                  .catch(() => {
+                    reject(schema.label + '已被使用');
+                  });
+              });
+            },
+          },
+        ];
+        return dynaRules;
+      }
 
       const getTitle = computed(() => (!unref(isUpdate) ? '新增账号' : '编辑账号'));
 

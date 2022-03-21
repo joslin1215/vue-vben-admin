@@ -6,8 +6,8 @@
     @back="goBack"
   >
     <template #extra>
-      <a-button type="primary" danger> 禁用账号 </a-button>
-      <a-button type="primary"> 修改密码 </a-button>
+      <a-button type="primary" danger> 禁用账号</a-button>
+      <a-button type="primary"> 修改密码</a-button>
     </template>
     <template #footer>
       <a-tabs default-active-key="detail" v-model:activeKey="currentKey">
@@ -33,6 +33,7 @@
   import { useGo } from '/@/hooks/web/usePage';
   import { useTabs } from '/@/hooks/web/useTabs';
   import { Tabs } from 'ant-design-vue';
+
   export default defineComponent({
     name: 'AccountDetail',
     components: { PageWrapper, ATabs: Tabs, ATabPane: Tabs.TabPane },
@@ -54,6 +55,7 @@
         // 本例的效果时点击返回始终跳转到账号列表页，实际应用时可返回上一页
         go('/system/account');
       }
+
       return { userId, currentKey, goBack };
     },
   });

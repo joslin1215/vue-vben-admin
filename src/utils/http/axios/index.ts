@@ -1,7 +1,9 @@
 // axios配置  可自行根据项目进行更改，只需更改该文件即可，其他文件可以不动
 // The axios configuration can be changed according to the project, just change the file, other files can be left unchanged
 
+// @ts-ignore
 import type { AxiosResponse } from 'axios';
+// @ts-ignore
 import { clone } from 'lodash-es';
 import type { RequestOptions, Result } from '/#/axios';
 import type { AxiosTransform, CreateAxiosOptions } from './axiosTransform';
@@ -11,17 +13,25 @@ import { useGlobSetting } from '/@/hooks/setting';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { RequestEnum, ResultEnum, ContentTypeEnum } from '/@/enums/httpEnum';
 import { isString } from '/@/utils/is';
-import { getToken } from '/@/utils/auth';
+import { getFingerprint, getToken, setFingerprint } from '/@/utils/auth';
 import { setObjToUrlParams, deepMerge } from '/@/utils';
 import { useErrorLogStoreWithOut } from '/@/store/modules/errorLog';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { joinTimestamp, formatRequestDate } from './helper';
 import { useUserStoreWithOut } from '/@/store/modules/user';
 import { AxiosRetry } from '/@/utils/http/axios/axiosRetry';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 const globSetting = useGlobSetting();
 const urlPrefix = globSetting.urlPrefix;
 const { createMessage, createErrorModal } = useMessage();
+
+const fpPromise = FingerprintJS.load();
+await (async () => {
+  const fp = await fpPromise;
+  const result = await fp.get();
+  setFingerprint(result.visitorId);
+})();
 
 /**
  * @description: 数据处理，方便区分多种处理方式
@@ -218,7 +228,11 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
         // 基础接口地址
         // baseURL: globSetting.apiUrl,
 
-        headers: { 'Content-Type': ContentTypeEnum.JSON, 'Request-Type': 'Ajax' },
+        headers: {
+          'Content-Type': ContentTypeEnum.JSON,
+          'X-Request-Type': 'Ajax',
+          'X-Client-Id': getFingerprint(),
+        },
         // 如果是form-data格式
         // headers: { 'Content-Type': ContentTypeEnum.FORM_URLENCODED },
         // 数据处理方式
@@ -266,3 +280,5 @@ export const http = createAxios({
     apiUrl: '',
   },
 });
+
+export const itosHttp = http;

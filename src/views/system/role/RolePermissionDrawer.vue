@@ -8,9 +8,11 @@
     @ok="handleSubmit"
   >
     <BasicTree
+      v-if="treeData.length"
       title=""
       defaultExpandAll
       checkable
+      :selectable="false"
       @check="handleCheck"
       :treeData="treeData"
       :checkedKeys="checkedKeys"
@@ -19,7 +21,7 @@
   </BasicDrawer>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, computed, unref } from 'vue';
+  import { computed, defineComponent, ref, unref } from 'vue';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicTree, TreeItem } from '/@/components/Tree';
 

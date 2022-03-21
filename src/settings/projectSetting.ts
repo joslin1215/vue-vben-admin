@@ -69,11 +69,11 @@ const setting: ProjectConfig = {
     // Whether to show the full screen button
     showFullScreen: true,
     // Whether to show the document button
-    showDoc: true,
+    showDoc: false,
     // Whether to show the notification button
-    showNotice: true,
+    showNotice: false,
     // Whether to display the menu search
-    showSearch: true,
+    showSearch: false,
   },
 
   // Menu configuration
@@ -136,7 +136,7 @@ const setting: ProjectConfig = {
   transitionSetting: {
     //  Whether to open the page switching animation
     // The disabled state will also disable pageLoading
-    enable: true,
+    enable: false,
 
     // Route basic switching animation
     basicTransition: RouterTransitionEnum.FADE_SIDE,

@@ -1,5 +1,5 @@
 import { UploadApiResult } from './model/uploadModel';
-import { defHttp, http } from '/@/utils/http/axios';
+import { http } from '/@/utils/http/axios';
 import { UploadFileParams } from '/#/axios';
 import { useGlobSetting } from '/@/hooks/setting';
 

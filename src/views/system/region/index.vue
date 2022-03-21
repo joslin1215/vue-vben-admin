@@ -2,9 +2,9 @@
   <div>
     <BasicTable @register="registerTable" @fetch-success="handleFetchSuccess">
       <template #toolbar>
-        <a-button type="primary" @click="handleAdd"> 新增区域 </a-button>
-        <a-button type="primary" @click="expandAll"> 展开所有 </a-button>
-        <a-button type="primary" @click="collapseAll"> 收起所有 </a-button>
+        <a-button type="primary" @click="handleAdd"> 新增区域</a-button>
+        <a-button type="primary" @click="expandAll"> 展开所有</a-button>
+        <a-button type="primary" @click="collapseAll"> 收起所有</a-button>
       </template>
       <template #action="{ record }">
         <TableAction
@@ -35,13 +35,13 @@
 <script lang="ts">
   import { defineComponent, nextTick } from 'vue';
 
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
+  import { BasicTable, TableAction, useTable } from '/@/components/Table';
 
   import { useDrawer } from '/@/components/Drawer';
   import RegionDrawer from './RegionDrawer.vue';
 
   import { columns, searchFormSchema } from './region.data';
-  import { removeRegion, getRegionTree } from '/@/api/system/region/Api';
+  import { getRegionTree, removeRegion } from '/@/api/system/region/Api';
 
   export default defineComponent({
     name: 'RegionManagement',

@@ -256,7 +256,8 @@
         // RangePicker place is an array
         if (isCreatePlaceholder && component !== 'RangePicker' && component) {
           propsData.placeholder =
-            unref(getComponentsProps)?.placeholder || createPlaceholderMessage(component);
+            unref(getComponentsProps)?.placeholder ||
+            createPlaceholderMessage(component) + unref(schema).label;
         }
         propsData.codeField = field;
         propsData.formValues = unref(getValues);

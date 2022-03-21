@@ -39,21 +39,19 @@
 <script lang="ts">
   import { defineComponent, reactive } from 'vue';
 
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getUserList } from '/@/api/system/account/Api';
+  import { BasicTable, TableAction, useTable } from '/@/components/Table';
+  import { getUserList, removeUser } from '/@/api/system/account/Api';
   import { PageWrapper } from '/@/components/Page';
   import DeptTree from './DeptTree.vue';
-
-  // import { useModal } from '/@/components/Modal';
-  // import AccountModal from './AccountModal.vue';
 
   import { useDrawer } from '/@/components/Drawer';
   import AccountDrawer from './AccountDrawer.vue';
 
   import { columns, searchFormSchema } from './account.data';
   import { useGo } from '/@/hooks/web/usePage';
-  import { removeUser } from '/@/api/system/account/Api';
   import ChangePwdDrawer from '/@/views/system/account/ChangePwdDrawer.vue';
+  import dayjs from 'dayjs';
+  import bus from '/@/utils/bus';
 
   export default defineComponent({
     name: 'AccountManagement',
@@ -63,6 +61,9 @@
       const [registerModal, { openDrawer }] = useDrawer();
       const [registerChangePwd, { openDrawer: openChangePwd }] = useDrawer();
       const searchInfo = reactive<Recordable>({});
+
+      searchInfo.date = dayjs.Dayjs;
+
       const [registerTable, { reload }] = useTable({
         title: '账号列表',
         api: getUserList,
@@ -75,7 +76,12 @@
           actionColOptions: {
             span: 4,
           },
-          submitOnChange: true,
+          resetFunc: () =>
+            new Promise((resolve) => {
+              searchInfo.organizationId = undefined;
+              resolve();
+              bus.emit('reset-user-table-search');
+            }),
         },
         fetchSetting: {
           listField: 'rows',

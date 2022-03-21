@@ -52,25 +52,6 @@
         {{ t('sys.login.registerButton') }}
       </Button> -->
     </FormItem>
-    <!--    <ARow class="enter-x">-->
-    <!--      <ACol :md="8" :xs="24">-->
-    <!--        <Button block @click="setLoginState(LoginStateEnum.MOBILE)">-->
-    <!--          {{ t('sys.login.mobileSignInFormTitle') }}-->
-    <!--        </Button>-->
-    <!--      </ACol>-->
-    <!--      <ACol :md="8" :xs="24" class="!my-2 !md:my-0 xs:mx-0 md:mx-2">-->
-    <!--        <Button block @click="setLoginState(LoginStateEnum.QR_CODE)">-->
-    <!--          {{ t('sys.login.qrSignInFormTitle') }}-->
-    <!--        </Button>-->
-    <!--      </ACol>-->
-    <!--      <ACol :md="7" :xs="24">-->
-    <!--        <Button block @click="setLoginState(LoginStateEnum.REGISTER)">-->
-    <!--          {{ t('sys.login.registerButton') }}-->
-    <!--        </Button>-->
-    <!--      </ACol>-->
-    <!--    </ARow>-->
-
-    <!--    <Divider class="enter-x">{{ t('sys.login.otherSignIn') }}</Divider>-->
 
     <div class="flex justify-evenly enter-x" :class="`${prefixCls}-sign-in-way`">
       <GithubFilled />
@@ -130,6 +111,7 @@
       const userInfo = await userStore.login({
         password: data.password,
         username: data.account,
+        rememberMe: unref(rememberMe),
         mode: 'none', //不要默认的错误提示
       });
       if (userInfo) {

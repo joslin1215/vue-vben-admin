@@ -2,7 +2,7 @@
   <div>
     <BasicTable @register="registerTable" @fetch-success="onFetchSuccess">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate"> 新增菜单 </a-button>
+        <a-button type="primary" @click="handleCreate"> 新增菜单</a-button>
       </template>
       <template #action="{ record }">
         <TableAction
@@ -29,7 +29,7 @@
 <script lang="ts">
   import { defineComponent, nextTick } from 'vue';
 
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
+  import { BasicTable, TableAction, useTable } from '/@/components/Table';
   import { getAllMenuList } from '/@/api/system/menu/Api';
 
   import { useDrawer } from '/@/components/Drawer';

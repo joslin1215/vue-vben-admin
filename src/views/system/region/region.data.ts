@@ -1,8 +1,11 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
+import { BasicColumn, FormSchema } from '/@/components/Table';
 import { h } from 'vue';
 import { Tag } from 'ant-design-vue';
+import { getRegionTree } from '/@/api/system/region/Api';
 
+/**
+ * 区域列表列配置
+ */
 export const columns: BasicColumn[] = [
   {
     title: '区域名称',
@@ -13,6 +16,7 @@ export const columns: BasicColumn[] = [
   {
     title: '排序',
     dataIndex: ['rawData', 'treeSort'],
+    ifShow: false,
     width: 50,
   },
   {
@@ -38,16 +42,19 @@ export const columns: BasicColumn[] = [
   },
 ];
 
+/**
+ * 区域列表搜索条件表单配置
+ */
 export const searchFormSchema: FormSchema[] = [
   {
-    field: 'name',
     label: '区域名称',
+    field: 'name',
     component: 'Input',
     colProps: { span: 8 },
   },
   {
-    field: 'status',
     label: '状态',
+    field: 'status',
     component: 'Select',
     componentProps: {
       options: [
@@ -59,21 +66,33 @@ export const searchFormSchema: FormSchema[] = [
   },
 ];
 
+/**
+ * 添加、编辑区域表单配置
+ */
 export const formSchema: FormSchema[] = [
   {
-    field: 'id',
     label: '区域ID',
+    field: 'id',
     component: 'Input',
     show: false,
   },
   {
-    field: 'name',
     label: '区域名称',
+    field: 'name',
     component: 'Input',
     required: true,
     rules: [
       {
         required: true,
+        message: '请输入区域名称',
+      },
+      {
+        max: 128,
+        message: '请输入正确的区域名称',
+      },
+      {
+        whitespace: true,
+        message: '请输入正确的区域名称',
       },
       {
         validator: (_, value) => {
@@ -91,29 +110,40 @@ export const formSchema: FormSchema[] = [
     ],
   },
   {
-    field: 'parentCode',
     label: '上级区域',
-    component: 'TreeSelect',
+    field: 'parentCode',
+    component: 'ApiTreeSelect',
     componentProps: {
-      defaultExpandAll: true,
+      api: getRegionTree,
+      params: {
+        status: 1,
+        thin: true,
+      },
+      treeDefaultExpandAll: true,
       fieldNames: {
         label: 'name',
         key: 'id',
         value: 'id',
       },
-      getPopupContainer: () => document.body,
+      onDropdownVisibleChange: (visible: boolean, b) => {
+        console.info('visible', visible, b);
+        if (visible) {
+        }
+      },
+      // getPopupContainer: () => document.body,
     },
   },
   {
-    field: 'treeSort',
     label: '排序',
+    field: 'treeSort',
     component: 'InputNumber',
     defaultValue: 50,
+    show: false,
     required: true,
   },
   {
-    field: 'status',
     label: '状态',
+    field: 'status',
     component: 'RadioButtonGroup',
     defaultValue: 1,
     componentProps: {

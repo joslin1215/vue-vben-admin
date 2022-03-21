@@ -14,15 +14,13 @@
   </BasicDrawer>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, computed, unref } from 'vue';
+  import { computed, defineComponent, ref, unref } from 'vue';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from './dept.data';
-
-  import { getDeptList, DeptParams } from '/@/api/system/dept/Api';
-  import { RegionParams, getRegionTree } from '/@/api/system/region/Api';
   import { deptSave } from '/@/api/system/dept/Api';
   import bus from '/@/utils/bus';
+
   export default defineComponent({
     name: 'DeptDrawer',
     components: { BasicDrawer, BasicForm },
@@ -30,9 +28,9 @@
     setup(_, { emit }) {
       const isUpdate = ref(true);
 
-      const [registerForm, { resetFields, setFieldsValue, updateSchema, validate }] = useForm({
+      const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
         labelWidth: 100,
-        schemas: formSchema(),
+        schemas: formSchema,
         showActionButtonGroup: false,
       });
 
@@ -45,32 +43,10 @@
           data.record.parentCode = null;
         }
 
-        // if (unref(isUpdate)) {
         await setFieldsValue({
           ...data.record,
         });
-        // }
-
-        await doUpdateSchema();
       });
-
-      async function doUpdateSchema() {
-        const deptTree = await getDeptList({ status: 1, thin: true } as unknown as DeptParams);
-        const regionTree = await getRegionTree({
-          status: 1,
-          thin: true,
-        } as unknown as RegionParams);
-        updateSchema([
-          {
-            field: 'parentCode',
-            componentProps: { treeData: deptTree },
-          },
-          {
-            field: 'regionId',
-            componentProps: { treeData: regionTree },
-          },
-        ]);
-      }
 
       const getTitle = computed(() => (!unref(isUpdate) ? '新增部门' : '编辑部门'));
 
@@ -84,7 +60,6 @@
             closeDrawer();
           } else {
             await resetFields();
-            await doUpdateSchema();
           }
           emit('success');
         } finally {

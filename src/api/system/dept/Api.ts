@@ -1,5 +1,6 @@
 import { http } from '/@/utils/http/axios';
 import { BasicFetchResult } from '/@/api/model/baseModel';
+
 enum Api {
   SaveDeptUrl = '/sys/organization/save',
   RemoveDeptUrl = '/sys/organization/remove/',
