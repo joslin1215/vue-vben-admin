@@ -90,10 +90,8 @@ export const useMultipleTabStore = defineStore({
     },
 
     async freeFrameRoute(router?: Router) {
-      console.log('freeFrameRoute');
       if (router) {
         router.getRoutes().forEach((route) => {
-          console.log(route);
           if (route.path.startsWith('/module/')) {
             let exists = false;
             this.getTabList.forEach((tab) => {
@@ -101,15 +99,12 @@ export const useMultipleTabStore = defineStore({
                 exists = true;
               }
             });
-            console.log(!exists, route);
             if (!exists) {
               route.meta.frameSrc = 'about:blank';
               route.meta.title = '';
             }
           }
         });
-
-        console.log(router.getRoutes());
       }
     },
 
@@ -207,7 +202,6 @@ export const useMultipleTabStore = defineStore({
     },
 
     async closeTab(tab: RouteLocationNormalized, router: Router) {
-      console.log('closeTab', tab);
       const close = (route: RouteLocationNormalized) => {
         const { fullPath, meta: { affix } = {} } = route;
         if (affix) {

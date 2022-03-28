@@ -26,13 +26,9 @@
       const route = useRoute();
 
       const showFrame = computed(() => {
-        // console.log('layout/iframe/index: showFrame', unref(getFramePages));
         return unref(getFramePages).length > 0;
       });
 
-      onMounted(() => {
-        console.log('layout/iframe/index: onMounted', route);
-      });
       return { getFramePages, hasRenderFrame, showIframe, showFrame };
     },
   });

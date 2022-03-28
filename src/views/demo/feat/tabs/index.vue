@@ -77,7 +77,7 @@
           return;
         }
 
-        openTab({ path: '/dm' + new Date().getTime(), title: `我是标题${new Date()}` });
+        openTab({ path: '/system/dept', title: `我是标题${new Date()}` });
       }
 
       function close() {

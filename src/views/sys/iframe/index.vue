@@ -52,10 +52,6 @@
     loading.value = false;
     calcHeight();
   }
-
-  onMounted(() => {
-    console.log('iframe/index', 'onMounted');
-  });
 </script>
 <style lang="less" scoped>
   @prefix-cls: ~'@{namespace}-iframe-page';

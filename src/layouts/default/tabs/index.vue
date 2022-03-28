@@ -88,7 +88,6 @@
       });
 
       listenerRouteChange((route) => {
-        console.log('route change', route);
         const { name } = route;
         if (name === REDIRECT_NAME || !route || !userStore.getToken) {
           return;
@@ -114,7 +113,6 @@
       });
 
       function handleChange(activeKey: any) {
-        console.log('handleChange', activeKey);
         activeKeyRef.value = activeKey;
         go(activeKey, false);
       }

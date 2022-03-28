@@ -3,11 +3,12 @@ import { encryptByMd5 } from '/@/utils/cipher';
 import { useMultipleTabStore } from '/@/store/modules/multipleTab';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { useGo } from '/@/hooks/web/usePage';
+import { useGlobSetting } from '/@/hooks/setting';
 
 export type EventDataWithPath = { path?: string; title?: string };
 export type EventDataWithName = { name?: string; title?: string; params?: object };
 
-export type EventData = EventDataWithPath & EventDataWithName;
+export type EventData = EventDataWithPath & EventDataWithName & { moduleCode?: string };
 
 export function useFrameRouter() {
   const router = useRouter();
@@ -19,12 +20,15 @@ export function useFrameRouter() {
   const topWindow = window.top || window;
 
   const dispatchEvent = (event: string, data?: EventData | string) => {
-    let detail: EventData = { title: '', path: '' };
+    let detail: EventData = {};
     if (typeof data === 'string') {
       detail['path'] = data;
     } else {
       detail = data as unknown as EventData;
     }
+
+    const { moduleCode } = useGlobSetting();
+    detail.moduleCode = moduleCode;
 
     topWindow.dispatchEvent(new CustomEvent(event, { detail: detail }));
   };
@@ -73,7 +77,7 @@ export function useFrameRouter() {
 
   async function goFrame(data: EventData) {
     console.log('useFrameRouter.goFrame', data);
-    const { path: dPath, title, name, params: dParams } = data;
+    const { path: dPath, title, name, params: dParams, moduleCode } = data;
     const params = { ...dParams, title: title };
     if (name) {
       if (router.hasRoute(name)) {
@@ -82,7 +86,7 @@ export function useFrameRouter() {
       }
     }
 
-    const path = dPath || name;
+    let path = dPath || name;
 
     if (!path) {
       createErrorModal({
@@ -120,9 +124,23 @@ export function useFrameRouter() {
       }
     });
 
+    let { iframeUrl = '' } = useGlobSetting();
+
+    {
+      if (!iframeUrl.endsWith('/')) {
+        iframeUrl += '/';
+      }
+      if (!path.startsWith('/')) {
+        path = '/' + path;
+      }
+    }
+
     goRoute.params = { ...goRoute.params, ...params };
-    goRoute.meta.frameSrc = 'https://1.121tongbu.com/tls.html?_t=' + new Date().getTime();
+    goRoute.meta.frameSrc = path.startsWith('http')
+      ? path
+      : iframeUrl + moduleCode + '/static/index.html#' + path;
     goRoute.meta.title = title;
+    console.log('useFrameRouter.goFrame', '进入外部路由', goRoute);
     go(goRoute);
   }
 
