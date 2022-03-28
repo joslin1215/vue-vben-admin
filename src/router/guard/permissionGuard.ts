@@ -29,7 +29,8 @@ export function createPermissionGuard(router: Router) {
       return;
     }
 
-    const token = userStore.getToken;
+    // TODO 开发阶段屏蔽token校验
+    const token = userStore.getToken || (window.top === window.self ? undefined : 'default');
 
     // Whitelist can be directly entered
     if (whitePathList.includes(to.path as PageEnum)) {

@@ -10,14 +10,6 @@ export type RoleParams = {
   status?: string;
 };
 
-export type RolePageParams = BasicPageParams & RoleParams;
-
-export type DeptParams = {
-  name?: string;
-  status?: string;
-  parentCode?: string;
-};
-
 export type RegionParams = {
   name?: string;
   status?: string;
@@ -38,30 +30,6 @@ export interface AccountListItem {
   createTime: string;
   remark: string;
   status: number;
-}
-
-export interface RegionListItem {
-  id: string;
-  name: string;
-  opened: boolean;
-  checked: boolean;
-  disabled: boolean;
-  remark: string;
-  status: number;
-  rawData: object;
-  extData: object;
-}
-
-export interface DeptListItem {
-  id: string;
-  name: string;
-  opened: boolean;
-  checked: boolean;
-  disabled: boolean;
-  remark: string;
-  status: number;
-  rawData: object;
-  extData: object;
 }
 
 export interface MenuListItem {
@@ -90,12 +58,6 @@ export interface RoleListItem {
  */
 export type AccountListGetResultModel = BasicFetchResult<AccountListItem>;
 
-export type DeptListGetResultModel = BasicFetchResult<DeptListItem>;
-
-export type RegionListGetResultModel = BasicFetchResult<RegionListItem>;
-
 export type MenuListGetResultModel = BasicFetchResult<MenuListItem>;
-
-export type RolePageListGetResultModel = BasicFetchResult<RoleListItem>;
 
 export type RoleListGetResultModel = RoleListItem[];

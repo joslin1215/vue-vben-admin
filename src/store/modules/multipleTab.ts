@@ -19,6 +19,8 @@ export interface MultipleTabState {
   cacheTabList: Set<string>;
   tabList: RouteLocationNormalized[];
   lastDragEndIndex: number;
+  dynamicFrameMap: Map<string, RouteLocationRaw>;
+  dynamicFrameKeyMap: Map<string, string>;
 }
 
 function handleGotoPage(router: Router) {
@@ -46,6 +48,8 @@ export const useMultipleTabStore = defineStore({
     tabList: cacheTab ? Persistent.getLocal(MULTIPLE_TABS_KEY) || [] : [],
     // Index of the last moved tab
     lastDragEndIndex: 0,
+    dynamicFrameMap: new Map(),
+    dynamicFrameKeyMap: new Map(),
   }),
   getters: {
     getTabList(): RouteLocationNormalized[] {
@@ -57,12 +61,18 @@ export const useMultipleTabStore = defineStore({
     getLastDragEndIndex(): number {
       return this.lastDragEndIndex;
     },
+    getDynamicFrameMap(): Map<string, RouteLocationRaw> {
+      return this.dynamicFrameMap;
+    },
+    getDynamicFrameKeyMap(): Map<string, String> {
+      return this.dynamicFrameKeyMap;
+    },
   },
   actions: {
     /**
      * Update the cache according to the currently opened tabs
      */
-    async updateCacheTab() {
+    async updateCacheTab(router?: Router) {
       const cacheMap: Set<string> = new Set();
 
       for (const tab of this.tabList) {
@@ -76,6 +86,31 @@ export const useMultipleTabStore = defineStore({
         cacheMap.add(name);
       }
       this.cacheTabList = cacheMap;
+      this.freeFrameRoute(router);
+    },
+
+    async freeFrameRoute(router?: Router) {
+      console.log('freeFrameRoute');
+      if (router) {
+        router.getRoutes().forEach((route) => {
+          console.log(route);
+          if (route.path.startsWith('/module/')) {
+            let exists = false;
+            this.getTabList.forEach((tab) => {
+              if (tab.name === route.name) {
+                exists = true;
+              }
+            });
+            console.log(!exists, route);
+            if (!exists) {
+              route.meta.frameSrc = 'about:blank';
+              route.meta.title = '';
+            }
+          }
+        });
+
+        console.log(router.getRoutes());
+      }
     },
 
     /**
@@ -172,6 +207,7 @@ export const useMultipleTabStore = defineStore({
     },
 
     async closeTab(tab: RouteLocationNormalized, router: Router) {
+      console.log('closeTab', tab);
       const close = (route: RouteLocationNormalized) => {
         const { fullPath, meta: { affix } = {} } = route;
         if (affix) {
@@ -220,6 +256,7 @@ export const useMultipleTabStore = defineStore({
       const index = this.tabList.findIndex((item) => (item.fullPath || item.path) === key);
       if (index !== -1) {
         await this.closeTab(this.tabList[index], router);
+        this.freeFrameRoute(router);
         const { currentRoute, replace } = router;
         // 检查当前路由是否存在于tabList中
         const isActivated = this.tabList.findIndex((item) => {
@@ -267,7 +304,7 @@ export const useMultipleTabStore = defineStore({
         }
         this.bulkCloseTabs(pathList);
       }
-      this.updateCacheTab();
+      this.updateCacheTab(router);
       handleGotoPage(router);
     },
 
@@ -287,13 +324,14 @@ export const useMultipleTabStore = defineStore({
         }
         this.bulkCloseTabs(pathList);
       }
-      this.updateCacheTab();
+      this.updateCacheTab(router);
       handleGotoPage(router);
     },
 
     async closeAllTab(router: Router) {
       this.tabList = this.tabList.filter((item) => item?.meta?.affix ?? false);
       this.clearCacheTabs();
+      this.freeFrameRoute(router);
       this.goToPage(router);
     },
 
@@ -318,7 +356,7 @@ export const useMultipleTabStore = defineStore({
         }
       }
       this.bulkCloseTabs(pathList);
-      this.updateCacheTab();
+      this.updateCacheTab(router);
       handleGotoPage(router);
     },
 
@@ -349,6 +387,14 @@ export const useMultipleTabStore = defineStore({
         findTab.path = fullPath;
         await this.updateCacheTab();
       }
+    },
+
+    addDynamicFrame(key: string, route: RouteLocationRaw) {
+      this.getDynamicFrameMap.set(key, route);
+    },
+
+    removeDynamicFrame(key: string) {
+      this.getDynamicFrameMap.delete(key);
     },
   },
 });

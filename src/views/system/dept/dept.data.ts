@@ -4,6 +4,10 @@ import { Tag } from 'ant-design-vue';
 import { getDeptList } from '/@/api/system/dept/Api';
 import { getRegionTree } from '/@/api/system/region/Api';
 
+const colProps = {
+  span: 24,
+};
+
 /**
  * 部门列表列配置
  */
@@ -82,6 +86,7 @@ export const formSchema: FormSchema[] = [
     label: '部门名称',
     field: 'name',
     component: 'Input',
+    colProps,
     required: true,
     rules: [
       {
@@ -115,6 +120,7 @@ export const formSchema: FormSchema[] = [
     label: '上级部门',
     field: 'parentCode',
     component: 'ApiTreeSelect',
+    colProps,
     componentProps: {
       defaultExpandAll: true,
       treeDefaultExpandAll: true,
@@ -135,6 +141,7 @@ export const formSchema: FormSchema[] = [
   {
     label: '负责区域',
     field: 'regionId',
+    colProps,
     component: 'ApiTreeSelect',
     required: true,
     componentProps: {
@@ -156,6 +163,7 @@ export const formSchema: FormSchema[] = [
   {
     label: '排序',
     field: 'treeSort',
+    colProps,
     component: 'InputNumber',
     defaultValue: 50,
     required: true,
@@ -164,6 +172,7 @@ export const formSchema: FormSchema[] = [
   {
     label: '状态',
     field: 'status',
+    colProps,
     component: 'RadioButtonGroup',
     defaultValue: 1,
     componentProps: {
@@ -177,6 +186,7 @@ export const formSchema: FormSchema[] = [
   {
     label: '备注',
     field: 'remark',
+    colProps,
     component: 'InputTextArea',
   },
 ];

@@ -4,7 +4,7 @@ import { Divider } from 'ant-design-vue';
 import {
   TypePicker,
   ThemeColorPicker,
-  SettingFooter,
+  // SettingFooter,
   SwitchItem,
   SelectItem,
   InputNumberItem,
@@ -143,9 +143,6 @@ export default defineComponent({
       );
     }
 
-    /**
-     * @description:
-     */
     function renderFeatures() {
       let triggerDef = unref(getTrigger);
 
@@ -413,14 +410,14 @@ export default defineComponent({
         {renderHeaderTheme()}
         <Divider>{() => t('layout.setting.sidebarTheme')}</Divider>
         {renderSiderTheme()}
-        <Divider>{() => t('layout.setting.interfaceFunction')}</Divider>
-        {renderFeatures()}
-        <Divider>{() => t('layout.setting.interfaceDisplay')}</Divider>
-        {renderContent()}
-        <Divider>{() => t('layout.setting.animation')}</Divider>
-        {renderTransition()}
-        <Divider />
-        <SettingFooter />
+        {/*<Divider>{() => t('layout.setting.interfaceFunction')}</Divider>*/}
+        {/*{renderFeatures()}*/}
+        {/*<Divider>{() => t('layout.setting.interfaceDisplay')}</Divider>*/}
+        {/*{renderContent()}*/}
+        {/*<Divider>{() => t('layout.setting.animation')}</Divider>*/}
+        {/*{renderTransition()}*/}
+        {/*<Divider />*/}
+        {/*<SettingFooter />*/}
       </BasicDrawer>
     );
   },

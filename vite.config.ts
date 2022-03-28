@@ -65,7 +65,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     },
     build: {
       target: 'es2015',
-      cssTarget: 'chrome80',
+      cssTarget: 'chrome79',
       outDir: OUTPUT_DIR,
       // minify: 'terser',
       /**

@@ -2,7 +2,9 @@ import { BasicColumn, FormSchema } from '/@/components/Table';
 import { h } from 'vue';
 import { Tag } from 'ant-design-vue';
 import { getRegionTree } from '/@/api/system/region/Api';
-
+const colProps = {
+  span: 24,
+};
 /**
  * 区域列表列配置
  */
@@ -73,12 +75,14 @@ export const formSchema: FormSchema[] = [
   {
     label: '区域ID',
     field: 'id',
+    colProps,
     component: 'Input',
     show: false,
   },
   {
     label: '区域名称',
     field: 'name',
+    colProps,
     component: 'Input',
     required: true,
     rules: [
@@ -112,6 +116,7 @@ export const formSchema: FormSchema[] = [
   {
     label: '上级区域',
     field: 'parentCode',
+    colProps,
     component: 'ApiTreeSelect',
     componentProps: {
       api: getRegionTree,
@@ -136,6 +141,7 @@ export const formSchema: FormSchema[] = [
   {
     label: '排序',
     field: 'treeSort',
+    colProps,
     component: 'InputNumber',
     defaultValue: 50,
     show: false,
@@ -144,6 +150,7 @@ export const formSchema: FormSchema[] = [
   {
     label: '状态',
     field: 'status',
+    colProps,
     component: 'RadioButtonGroup',
     defaultValue: 1,
     componentProps: {
@@ -156,6 +163,7 @@ export const formSchema: FormSchema[] = [
   },
   {
     label: '备注',
+    colProps,
     field: 'remark',
     component: 'InputTextArea',
   },

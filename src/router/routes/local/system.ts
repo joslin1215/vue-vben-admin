@@ -47,7 +47,6 @@ const system: AppRouteModule = {
       path: 'menu',
       name: 'MenuManagement',
       meta: {
-        hideMenu: true,
         title: t('routes.demo.system.menu'),
       },
       component: () => import('/@/views/system/menu/index.vue'),
@@ -65,7 +64,6 @@ const system: AppRouteModule = {
       name: 'ChangePassword',
       meta: {
         title: t('routes.demo.system.password'),
-        hideMenu: true,
         ignoreKeepAlive: true,
       },
       component: () => import('/@/views/system/password/index.vue'),
@@ -77,15 +75,6 @@ const system: AppRouteModule = {
         title: t('routes.demo.system.region'),
       },
       component: () => import('/@/views/system/region/index.vue'),
-    },
-    {
-      path: 'frame',
-      name: 'SystemFrame',
-      meta: {
-        title: 'iframe嵌套测试',
-        frameSrc: 'http://localhost:3100/#/',
-      },
-      component: () => import('/@/views/sys/iframe/FrameBlank.vue'),
     },
   ],
 };

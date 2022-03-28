@@ -13,25 +13,16 @@ import { useGlobSetting } from '/@/hooks/setting';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { RequestEnum, ResultEnum, ContentTypeEnum } from '/@/enums/httpEnum';
 import { isString } from '/@/utils/is';
-import { getFingerprint, getToken, setFingerprint } from '/@/utils/auth';
+import { getFingerprint, getToken } from '/@/utils/auth';
 import { setObjToUrlParams, deepMerge } from '/@/utils';
 import { useErrorLogStoreWithOut } from '/@/store/modules/errorLog';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { joinTimestamp, formatRequestDate } from './helper';
 import { useUserStoreWithOut } from '/@/store/modules/user';
 import { AxiosRetry } from '/@/utils/http/axios/axiosRetry';
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
-
 const globSetting = useGlobSetting();
 const urlPrefix = globSetting.urlPrefix;
 const { createMessage, createErrorModal } = useMessage();
-
-const fpPromise = FingerprintJS.load();
-await (async () => {
-  const fp = await fpPromise;
-  const result = await fp.get();
-  setFingerprint(result.visitorId);
-})();
 
 /**
  * @description: 数据处理，方便区分多种处理方式
@@ -262,7 +253,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
           // 是否携带token
           withToken: true,
           retryRequest: {
-            isOpenRetry: true,
+            isOpenRetry: false,
             count: 5,
             waitTime: 100,
           },

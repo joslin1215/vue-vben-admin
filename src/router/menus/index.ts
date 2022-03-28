@@ -12,12 +12,22 @@ import { pathToRegexp } from 'path-to-regexp';
 
 const modules = import.meta.globEager('./modules/**/*.ts');
 
+const localModules = import.meta.globEager('./modules/**/*.ts');
+
 const menuModules: MenuModule[] = [];
+
+const localMenuModules: MenuModule[] = [];
 
 Object.keys(modules).forEach((key) => {
   const mod = modules[key].default || {};
   const modList = Array.isArray(mod) ? [...mod] : [mod];
   menuModules.push(...modList);
+});
+
+Object.keys(localModules).forEach((key) => {
+  const mod = localModules[key].default || {};
+  const modList = Array.isArray(mod) ? [...mod] : [mod];
+  localMenuModules.push(...modList);
 });
 
 // ===========================
@@ -51,10 +61,24 @@ const staticMenus: Menu[] = [];
   }
 })();
 
+const localStaticMenus: Menu[] = [];
+(() => {
+  localMenuModules.sort((a, b) => {
+    return (a.orderNo || 0) - (b.orderNo || 0);
+  });
+
+  for (const menu of localMenuModules) {
+    localStaticMenus.push(transformMenuModule(menu));
+  }
+})();
+
 async function getAsyncMenus() {
   const permissionStore = usePermissionStore();
   if (isBackMode()) {
-    return permissionStore.getBackMenuList.filter((item) => !item.meta?.hideMenu && !item.hideMenu);
+    return [
+      ...permissionStore.getBackMenuList.filter((item) => !item.meta?.hideMenu && !item.hideMenu),
+      ...localStaticMenus,
+    ];
   }
   if (isRouteMappingMode()) {
     return permissionStore.getFrontMenuList.filter((item) => !item.hideMenu);

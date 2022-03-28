@@ -4,6 +4,10 @@ import { Switch } from 'ant-design-vue';
 import { setRoleStatus } from '/@/api/system/role/Api';
 import { useMessage } from '/@/hooks/web/useMessage';
 
+const colProps = {
+  span: 24,
+};
+
 export const columns: BasicColumn[] = [
   {
     title: '角色名称',
@@ -83,6 +87,7 @@ export const formSchema: FormSchema[] = [
   {
     field: 'id',
     label: '编码',
+    colProps,
     component: 'Input',
     show: false,
   },
@@ -90,6 +95,7 @@ export const formSchema: FormSchema[] = [
     field: 'name',
     label: '角色名称',
     required: true,
+    colProps,
     component: 'Input',
     rules: [
       {
@@ -109,6 +115,7 @@ export const formSchema: FormSchema[] = [
   {
     field: 'status',
     label: '状态',
+    colProps,
     component: 'RadioButtonGroup',
     defaultValue: 1,
     componentProps: {
@@ -121,6 +128,7 @@ export const formSchema: FormSchema[] = [
   {
     label: '备注',
     field: 'remark',
+    colProps,
     component: 'InputTextArea',
     rules: [
       {

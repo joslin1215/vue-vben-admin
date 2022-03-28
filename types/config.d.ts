@@ -147,6 +147,7 @@ export interface GlobConfig {
   // Project abbreviation
   shortName: string;
   iframeUrl?: string;
+  moduleCode?: string;
 }
 export interface GlobEnvConfig {
   // Site title
@@ -161,4 +162,6 @@ export interface GlobEnvConfig {
   VITE_GLOB_UPLOAD_URL?: string;
 
   VITE_GLOB_IFRAME_URL?: string;
+
+  VITE_GLOB_MODULE_CODE?: string;
 }

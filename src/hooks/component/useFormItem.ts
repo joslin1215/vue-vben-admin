@@ -50,9 +50,16 @@ export function useRuleFormItem<T extends Recordable>(
       if (isEqual(value, defaultState.value)) return;
 
       innerState.value = value as T[keyof T];
-      nextTick(() => {
-        emit?.(changeEvent, value, ...(toRaw(unref(emitData)) || []));
-      });
+      /**FIXME 修复点击清楚按钮后不触发校验 */
+      /* 自定义修改开始 */
+      emit?.(changeEvent, value, ...(toRaw(unref(emitData)) || []));
+
+      // 》》》》》被注释的内容
+      // nextTick(() => {
+      //   emit?.(changeEvent, value, ...(toRaw(unref(emitData)) || []));
+      // });
+      //《《《《《《被注释的内容
+      /* 自定义修改结束 */
     },
   });
 

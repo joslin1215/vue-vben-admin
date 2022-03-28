@@ -11,6 +11,7 @@ export type LayoutMapKey = 'LAYOUT';
 const globSetting = useGlobSetting();
 
 const IFRAME = () => import('/@/views/sys/iframe/FrameBlank.vue');
+// const IFRAME = () => import('/@/layouts/iframe/index.vue');
 
 const LayoutMap = new Map<string, () => Promise<typeof import('*.vue')>>();
 
@@ -25,11 +26,19 @@ function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
   if (!routes) return;
   routes.forEach((item) => {
     // @ts-ignore
-    if (globSetting.iframeUrl && !item.meta?.frameSrc?.startsWith('http')) {
+    if (
+      globSetting.iframeUrl &&
+      item.meta?.frameSrc !== 'about:blank' &&
+      !item.meta?.frameSrc?.startsWith('http')
+    ) {
       item.meta.frameSrc = globSetting.iframeUrl + item.meta.frameSrc;
     }
     if (!item.component && item.meta?.frameSrc) {
       item.component = 'IFRAME';
+    }
+
+    if (item.component === 'IFRAME') {
+      item.path = item.path.replace('index.html#', '');
     }
     const { component, name } = item;
     const { children } = item;

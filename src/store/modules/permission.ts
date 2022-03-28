@@ -191,8 +191,6 @@ export const usePermissionStore = defineStore({
             console.error(error);
           }
 
-          console.log('routeList', routeList);
-
           // Dynamically introduce components
           routeList = transformObjToRoute(routeList);
 

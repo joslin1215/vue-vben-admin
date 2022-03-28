@@ -28,14 +28,13 @@
           />
         </template>
         <template #localSearch="{ model, field }">
-          <ApiSelect
-            :api="optionsListApi"
-            showSearch
-            v-model:value="model[field]"
-            optionFilterProp="label"
-            resultField="list"
-            labelField="name"
-            valueField="id"
+          <a-date-picker
+            v-model:value="dpDate"
+            show-time
+            value-format="YYYY-MM-DD HH:mm:ss"
+            placeholder="选择时间"
+            width="200"
+            format="YYYY-MM-DD HH:mm:ss"
           />
         </template>
         <template #remoteSearch="{ model, field }">
@@ -53,6 +52,15 @@
         </template>
       </BasicForm>
     </CollapseContainer>
+
+    <a-datepicker
+      v-model:value="dpDate"
+      show-time
+      value-format="YYYY-MM-DD HH:mm:ss"
+      placeholder="选择时间"
+      width="200"
+      format="YYYY-MM-DD HH:mm:ss"
+    />
   </PageWrapper>
 </template>
 <script lang="ts">
@@ -67,10 +75,13 @@
   import { treeOptionsListApi } from '/@/api/demo/tree';
   import { Select } from 'ant-design-vue';
   import { cloneDeep } from 'lodash-es';
+  import { dateUtil, formatToDateTime } from '/@/utils/dateUtil';
+  import dayjs from 'dayjs';
 
   const valueSelectA = ref<string[]>([]);
   const valueSelectB = ref<string[]>([]);
   const options = ref<Recordable[]>([]);
+  const dpDate = ref(formatToDateTime(dayjs()));
   for (let i = 1; i < 10; i++) options.value.push({ label: '选项' + i, value: `${i}` });
 
   const optionsA = computed(() => {
@@ -637,9 +648,11 @@
         },
         handleSubmit: (values: any) => {
           console.log('values', values);
+          console.log(unref(dpDate));
           createMessage.success('click search,values:' + JSON.stringify(values));
         },
         check,
+        dpDate,
       };
     },
   });

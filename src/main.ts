@@ -15,8 +15,28 @@ import { setupStore } from '/@/store';
 import { setupGlobDirectives } from '/@/directives';
 import { setupI18n } from '/@/locales/setupI18n';
 import { registerGlobComp } from '/@/components/registerGlobComp';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { setFingerprint } from '/@/utils/auth';
+
+const dev = true;
+
+(function () {
+  if (!dev) {
+    // @ts-ignore
+    console.log = new Function();
+    // @ts-ignore
+    console.info = new Function();
+  }
+})();
 
 async function bootstrap() {
+  const fpPromise = FingerprintJS.load();
+  await (async () => {
+    const fp = await fpPromise;
+    const result = await fp.get();
+    setFingerprint(result.visitorId);
+  })();
+
   const app = createApp(App);
 
   // Configure store
@@ -46,7 +66,6 @@ async function bootstrap() {
 
   // https://next.router.vuejs.org/api/#isready
   // await router.isReady();
-
   app.mount('#app');
 }
 bootstrap();

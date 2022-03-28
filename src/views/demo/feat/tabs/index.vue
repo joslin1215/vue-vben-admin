@@ -17,6 +17,15 @@
       <a-button class="mr-2" @click="refreshPage"> 刷新当前 </a-button>
     </CollapseContainer>
 
+    <CollapseContainer>
+      <a-button class="mr-2 ant-btn-danger" @click="open(1)"> 打开新标签-本地路由 </a-button>
+      <a-button class="mr-2" @click="open(2)"> 打开新标签-iframe </a-button>
+      <a-button class="mr-2" @click="refresh"> 刷新新标签 </a-button>
+      <a-button class="mr-2" @click="close"> 关闭当前标签 </a-button>
+      <a-button class="mr-2" @click="replace"> 当前标签切换 </a-button>
+      <a-button class="mr-2" @click="back"> 当前标签回退 </a-button>
+    </CollapseContainer>
+
     <CollapseContainer class="mt-4" title="标签页复用超出限制自动关闭(使用场景: 动态路由)">
       <a-button v-for="index in 6" :key="index" class="mr-2" @click="toDetail(index)">
         打开{{ index }}详情页
@@ -32,15 +41,23 @@
   import { Input, Alert } from 'ant-design-vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useGo } from '/@/hooks/web/usePage';
+  // import { openTab, closeTab, refreshTab, replaceTab, backTab } from '/@/utils/helper/routerHelper';
+  import { useFrameRouter } from '/@/hooks/web/useFrameRouter';
 
   export default defineComponent({
     name: 'TabsDemo',
-    components: { CollapseContainer, PageWrapper, [Input.name]: Input, [Alert.name]: Alert },
+    components: {
+      CollapseContainer,
+      PageWrapper,
+      [Input.name]: Input,
+      [Alert.name]: Alert,
+    },
     setup() {
       const go = useGo();
       const title = ref<string>('');
       const { closeAll, closeLeft, closeRight, closeOther, closeCurrent, refreshPage, setTitle } =
         useTabs();
+      const { openTab, closeTab, refreshTab, replaceTab, backTab } = useFrameRouter();
       const { createMessage } = useMessage();
       function setTabTitle() {
         if (title.value) {
@@ -53,6 +70,31 @@
       function toDetail(index: number) {
         go(`/feat/tabs/detail/${index}`);
       }
+
+      function open(type = 1) {
+        if (type === 1) {
+          openTab(['/system/dept', '/system/account'][new Date().getTime() % 2]);
+          return;
+        }
+
+        openTab({ path: '/dm' + new Date().getTime(), title: `我是标题${new Date()}` });
+      }
+
+      function close() {
+        closeTab();
+      }
+
+      function refresh() {
+        refreshTab();
+      }
+      function replace() {
+        replaceTab({ path: '/system/account' });
+      }
+
+      function back() {
+        backTab();
+      }
+
       return {
         closeAll,
         closeLeft,
@@ -63,6 +105,11 @@
         refreshPage,
         setTabTitle,
         title,
+        open,
+        close,
+        refresh,
+        replace,
+        back,
       };
     },
   });

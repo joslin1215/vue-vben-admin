@@ -1,27 +1,25 @@
 <template>
   <div :class="prefixCls" :style="getWrapStyle">
     <Spin :spinning="loading" size="large" :style="getWrapStyle">
-      <iframe
-        :src="frameSrc"
-        :class="`${prefixCls}__main`"
-        ref="frameRef"
-        @load="hideLoading"
-      ></iframe>
+      <iframe :src="src" :class="`${prefixCls}__main`" ref="frameRef" @load="hideLoading"></iframe>
     </Spin>
   </div>
 </template>
 <script lang="ts" setup>
   import type { CSSProperties } from 'vue';
-  import { ref, unref, computed } from 'vue';
+  import { ref, unref, computed, onMounted } from 'vue';
   import { Spin } from 'ant-design-vue';
   import { useWindowSizeFn } from '/@/hooks/event/useWindowSizeFn';
   import { propTypes } from '/@/utils/propTypes';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useLayoutHeight } from '/@/layouts/default/content/useContentViewHeight';
 
-  defineProps({
+  const props = defineProps({
     frameSrc: propTypes.string.def(''),
+    title: propTypes.string.def(''),
   });
+
+  const src = ref<string>(props.frameSrc);
 
   const loading = ref(true);
   const topRef = ref(50);
@@ -54,6 +52,10 @@
     loading.value = false;
     calcHeight();
   }
+
+  onMounted(() => {
+    console.log('iframe/index', 'onMounted');
+  });
 </script>
 <style lang="less" scoped>
   @prefix-cls: ~'@{namespace}-iframe-page';

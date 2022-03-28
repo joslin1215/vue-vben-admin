@@ -57,15 +57,28 @@ export function downloadByData(data: BlobPart, filename: string, mime?: string, 
  */
 export function downloadByUrl({
   url,
+  params,
   target = '_blank',
   fileName,
 }: {
   url: string;
+  params?: object;
   target?: TargetContext;
   fileName?: string;
 }): boolean {
   const isChrome = window.navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
   const isSafari = window.navigator.userAgent.toLowerCase().indexOf('safari') > -1;
+
+  if (params) {
+    const hasParamInUrl = url.indexOf('?') > -1;
+    url =
+      url +
+      (hasParamInUrl ? '&' : '?') +
+      Object.keys(params)
+        .filter((key) => params[key])
+        .map((key) => `${key}=${params[key]}`)
+        .join('&');
+  }
 
   if (/(iP)/g.test(window.navigator.userAgent)) {
     console.error('Your browser does not support download!');

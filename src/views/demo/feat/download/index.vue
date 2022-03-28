@@ -36,6 +36,7 @@
       function handleDownloadByUrl() {
         downloadByUrl({
           url: 'https://codeload.github.com/anncwb/vue-vben-admin-doc/zip/master',
+          params: { a: 1, b: 2 },
           target: '_self',
         });
 
