@@ -54,6 +54,10 @@
         formProps: Ref<FormProps>;
       };
 
+      if (!schema.value.colProps) {
+        schema.value.colProps = { span: 22 };
+      }
+
       const itemLabelWidthProp = useItemLabelWidth(schema, formProps);
 
       const getValues = computed(() => {
