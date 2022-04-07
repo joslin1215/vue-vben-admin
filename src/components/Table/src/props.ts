@@ -148,4 +148,8 @@ export const basicProps = {
     type: String as PropType<SizeType>,
     default: DEFAULT_SIZE,
   },
+  draggable: {
+    type: Boolean,
+    default: false,
+  },
 };

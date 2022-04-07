@@ -4,6 +4,7 @@ import { useMultipleTabStore } from '/@/store/modules/multipleTab';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { useGo } from '/@/hooks/web/usePage';
 import { useGlobSetting } from '/@/hooks/setting';
+import { useTabs } from '/@/hooks/web/useTabs';
 
 export type EventDataWithPath = { path?: string; title?: string };
 export type EventDataWithName = { name?: string; title?: string; params?: object };
@@ -12,14 +13,24 @@ export type EventData = EventDataWithPath & EventDataWithName & { moduleCode?: s
 
 export function useFrameRouter() {
   const router = useRouter();
-  router.currentRoute.value;
   const go = useGo();
   const tabStore = useMultipleTabStore();
   const { createErrorModal } = useMessage();
 
+  const { refreshPage, closeCurrent } = useTabs(router);
+
   const topWindow = window.top || window;
 
   const dispatchEvent = (event: string, data?: EventData | string) => {
+    console.log('dispatchEvent', event, data);
+    topWindow.postMessage({ obj: 'router', act: event, detail: data }, '*');
+  };
+
+  function isFrame(): boolean {
+    return window.self !== window.top;
+  }
+
+  function openTab(data: EventData | string) {
     let detail: EventData = {};
     if (typeof data === 'string') {
       detail['path'] = data;
@@ -27,30 +38,40 @@ export function useFrameRouter() {
       detail = data as unknown as EventData;
     }
 
-    const { moduleCode } = useGlobSetting();
-    detail.moduleCode = moduleCode;
+    /** 用name路由转为path */
+    if (detail.name && router.hasRoute(detail.name)) {
+      router.getRoutes().forEach((route) => {
+        if (route.name === detail.name) {
+          detail.path = route.path;
+        }
+      });
+    }
 
-    topWindow.dispatchEvent(new CustomEvent(event, { detail: detail }));
-  };
+    if (data) {
+      detail.path = getPath(data);
+      const { moduleCode } = useGlobSetting();
+      detail.moduleCode = moduleCode;
+    }
 
-  function isFrame(): boolean {
-    return window.self !== window.top;
+    dispatchEvent('openTab', data);
   }
-  function openTab(to: EventData | string) {
-    dispatchEvent('openTab', to);
-  }
+
   async function closeTab() {
     dispatchEvent('closeTab');
   }
+
   function refreshTab() {
     dispatchEvent('refreshTab');
   }
+
   function replaceTab(to: EventData | string) {
     dispatchEvent('replaceTab', to);
   }
+
   function backTab() {
     dispatchEvent('backTab');
   }
+
   function genFrameRoute(num: number) {
     return;
 
@@ -73,6 +94,36 @@ export function useFrameRouter() {
       router.addRoute(newRoute);
       tabStore.getDynamicFrameKeyMap.set(md5Str, '');
     }
+  }
+
+  function getPath(data: EventData | string | undefined): string | undefined {
+    if (!data) return undefined;
+    let path: string | undefined = undefined;
+    if (typeof data === 'string') {
+      path = data as string;
+    } else if (data.path) {
+      path = data.path;
+    }
+
+    if (!path) return undefined;
+
+    console.info(window.location);
+
+    if (!path.startsWith('http')) {
+      if (!path.startsWith('http')) {
+        if (window.location.href.startsWith('http://localhost:3')) {
+          path =
+            location.protocol +
+            '//' +
+            location.host +
+            '/#' +
+            (path.startsWith('/') ? '' : '/') +
+            path;
+        }
+      }
+    }
+
+    return path;
   }
 
   async function goFrame(data: EventData) {
@@ -108,9 +159,10 @@ export function useFrameRouter() {
       }
     }
 
-    console.log('useFrameRouter.goFrame', '进入外部路由');
+    console.log('useFrameRouter.goFrame', '进入外部路由', path);
     const frameMap = tabStore.getDynamicFrameMap;
     const key = encryptByMd5(path + (params ? JSON.stringify(params) : ''));
+    console.log(key);
     if (frameMap.has(key)) {
       // @ts-ignore
       await router.push(frameMap.get(key));
@@ -124,25 +176,59 @@ export function useFrameRouter() {
       }
     });
 
-    let { iframeUrl = '' } = useGlobSetting();
+    const { iframeUrl = '' } = useGlobSetting();
 
-    {
-      if (!iframeUrl.endsWith('/')) {
-        iframeUrl += '/';
-      }
+    if (!path.startsWith('http')) {
       if (!path.startsWith('/')) {
         path = '/' + path;
       }
     }
 
-    goRoute.params = { ...goRoute.params, ...params };
-    goRoute.meta.frameSrc = path.startsWith('http')
+    let frameSrc = path.startsWith('http')
       ? path
       : iframeUrl + moduleCode + '/static/index.html#' + path;
+
+    if (!frameSrc.startsWith('http') && !frameSrc.startsWith('/')) {
+      frameSrc = '/' + frameSrc;
+    }
+
+    goRoute.params = { ...goRoute.params, ...params };
+    goRoute.meta.frameSrc = frameSrc;
+
     goRoute.meta.title = title;
     console.log('useFrameRouter.goFrame', '进入外部路由', goRoute);
+    frameMap.set(key, goRoute);
     go(goRoute);
   }
 
-  return { isFrame, openTab, closeTab, refreshTab, replaceTab, backTab, genFrameRoute, goFrame };
+  async function handler(message: { obj: string; act: string; detail: EventData }) {
+    console.log('useFrameRouter.handler', message);
+    if (message.obj === 'router') {
+      if (message.act === 'openTab') {
+        await goFrame(message.detail);
+      } else if (message.act === 'closeTab') {
+        await closeCurrent();
+      } else if (message.act === 'refreshTab') {
+        await refreshPage();
+      } else if (message.act === 'replaceTab') {
+        console.error('replaceTab未实现');
+      } else if (message.act === 'backTab') {
+        router.back();
+      } else if (message.act === 'goFrame') {
+        await goFrame(message.detail);
+      }
+    }
+  }
+
+  return {
+    isFrame,
+    openTab,
+    closeTab,
+    refreshTab,
+    replaceTab,
+    backTab,
+    genFrameRoute,
+    goFrame,
+    handler,
+  };
 }

@@ -91,6 +91,7 @@ export const useMultipleTabStore = defineStore({
 
     async freeFrameRoute(router?: Router) {
       if (router) {
+        const delKeys: string[] = [];
         router.getRoutes().forEach((route) => {
           if (route.path.startsWith('/module/')) {
             let exists = false;
@@ -102,8 +103,18 @@ export const useMultipleTabStore = defineStore({
             if (!exists) {
               route.meta.frameSrc = 'about:blank';
               route.meta.title = '';
+              this.getDynamicFrameMap.forEach((value, key) => {
+                // @ts-ignore
+                if (value.path === route.path) {
+                  delKeys.push(key);
+                }
+              });
             }
           }
+        });
+
+        delKeys.forEach((key) => {
+          this.getDynamicFrameMap.delete(key);
         });
       }
     },
@@ -209,6 +220,7 @@ export const useMultipleTabStore = defineStore({
         }
         const index = this.tabList.findIndex((item) => item.fullPath === fullPath);
         index !== -1 && this.tabList.splice(index, 1);
+        this.freeFrameRoute(router);
       };
 
       const { currentRoute, replace } = router;

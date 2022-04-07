@@ -7,7 +7,7 @@ import { PageEnum } from '/@/enums/pageEnum';
 import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY } from '/@/enums/cacheEnum';
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
 import { GetUserInfoModel, LoginParams } from '/@/api/sys/model/userModel';
-import { doLogout, getUserInfo, loginApi } from '/@/api/sys/user';
+import { doLogout, getUserInfo, loginApi, autoLoginApi } from '/@/api/sys/user';
 import { router } from '/@/router';
 import { usePermissionStore } from '/@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
@@ -86,8 +86,8 @@ export const useUserStore = defineStore({
       },
     ): Promise<GetUserInfoModel | null> {
       try {
-        const { goHome = true, mode, ...loginParams } = params;
-        const data = await loginApi(loginParams, mode);
+        const { goHome = true, mode, autoLogin, ...loginParams } = params;
+        const data = autoLogin ? await autoLoginApi() : await loginApi(loginParams, mode);
         const { token } = data;
 
         // save token
@@ -148,6 +148,8 @@ export const useUserStore = defineStore({
       this.setToken(undefined);
       this.setSessionTimeout(false);
       this.setUserInfo(null);
+      console.log('===============logout');
+      window.sessionStorage.setItem('sessionTimeout', 'true');
       goLogin && router.push(PageEnum.BASE_LOGIN);
     },
 

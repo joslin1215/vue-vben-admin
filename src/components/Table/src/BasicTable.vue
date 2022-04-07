@@ -21,9 +21,11 @@
       :rowClassName="getRowClassName"
       v-show="getEmptyDataIsShowTable"
       @change="handleTableChange"
+      @drop.prevent="handleDrop"
+      @dragstart="handleDragStart"
     >
       <template #[item]="data" v-for="item in Object.keys($slots)" :key="item">
-        <slot :name="item" v-bind="data || {}"></slot>
+        <slot :name="item" v-bind="data || {}" @drop.prevent="handleDrop"></slot>
       </template>
       <template #headerCell="{ column }">
         <HeaderCell :column="column" />
@@ -94,10 +96,15 @@
       'expanded-rows-change',
       'change',
       'columns-change',
+      'dragstart',
+      'dragend',
+      'drop',
     ],
     setup(props, { attrs, emit, slots, expose }) {
       const tableElRef = ref(null);
       const tableData = ref<Recordable[]>([]);
+
+      const dragIndexData = ref<number[]>([-1, -1]);
 
       const wrapRef = ref(null);
       const formRef = ref(null);
@@ -201,6 +208,9 @@
         clearSelectedRowKeys,
         getAutoCreateKey,
         emit,
+        getDataSource,
+        draggable: props.draggable,
+        dragIndexData: unref(dragIndexData),
       });
 
       const { getRowClassName } = useTableStyle(getProps, prefixCls);
@@ -323,6 +333,14 @@
 
       emit('register', tableAction, formActions);
 
+      function handleDrop(e) {
+        console.log('--handleDrop', e);
+      }
+
+      function handleDragStart(e) {
+        console.log('--handleDragStart', e);
+      }
+
       return {
         formRef,
         tableElRef,
@@ -341,6 +359,8 @@
         getFormSlotKeys,
         getWrapperClass,
         columns: getViewColumns,
+        handleDrop,
+        handleDragStart,
       };
     },
   });

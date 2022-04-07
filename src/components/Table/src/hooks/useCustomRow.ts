@@ -10,6 +10,9 @@ interface Options {
   clearSelectedRowKeys: () => void;
   emit: EmitType;
   getAutoCreateKey: ComputedRef<boolean | undefined>;
+  draggable?: boolean;
+  dragIndexData?: number[];
+  getDataSource?: () => Recordable[];
 }
 
 function getKey(
@@ -31,10 +34,20 @@ function getKey(
 
 export function useCustomRow(
   propsRef: ComputedRef<BasicTableProps>,
-  { setSelectedRowKeys, getSelectRowKeys, getAutoCreateKey, clearSelectedRowKeys, emit }: Options,
+  {
+    setSelectedRowKeys,
+    getSelectRowKeys,
+    getAutoCreateKey,
+    clearSelectedRowKeys,
+    emit,
+    draggable,
+    dragIndexData,
+    getDataSource,
+  }: Options,
 ) {
   const customRow = (record: Recordable, index: number) => {
     return {
+      draggable: draggable ?? false,
       onClick: (e: Event) => {
         e?.stopPropagation();
         function handleClick() {
@@ -91,7 +104,41 @@ export function useCustomRow(
       onMouseleave: (event: Event) => {
         emit('row-mouseleave', record, index, event);
       },
+      ondragstart: () => {
+        if (!canDrag()) return;
+        if (dragIndexData) {
+          dragIndexData[0] = index;
+        }
+      },
+      ondrop() {
+        if (!canDrag()) return;
+
+        if (dragIndexData) dragIndexData[1] = index;
+      },
+      ondragend() {
+        if (!canDrag()) return;
+
+        if (dragIndexData && dragIndexData[0] != -1 && dragIndexData[0] !== dragIndexData[1]) {
+          const dataSource = getDataSource ? getDataSource() : [];
+          [dataSource[dragIndexData[0]], dataSource[dragIndexData[1]]] = [
+            dataSource[dragIndexData[1]],
+            dataSource[dragIndexData[0]],
+          ];
+        }
+      },
+      ondragover() {
+        return false;
+      },
     };
+    function canDrag() {
+      return (
+        draggable && _getDataSource().length > 2 && dragIndexData && dragIndexData.length === 2
+      );
+    }
+
+    function _getDataSource() {
+      return getDataSource ? getDataSource() : [];
+    }
   };
 
   return {

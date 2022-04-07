@@ -38,7 +38,7 @@ function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
     }
 
     if (item.component === 'IFRAME') {
-      item.path = item.path.replace('index.html#', '');
+      item.path = item.path.replace('/index.html#', '');
     }
     const { component, name } = item;
     const { children } = item;

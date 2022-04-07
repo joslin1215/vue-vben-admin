@@ -18,18 +18,22 @@ import { registerGlobComp } from '/@/components/registerGlobComp';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { setFingerprint } from '/@/utils/auth';
 
-const dev = true;
-
-(function () {
-  if (!dev) {
-    // @ts-ignore
-    console.log = new Function();
-    // @ts-ignore
-    console.info = new Function();
-  }
-})();
+// const dev = true;
+//
+// (function () {
+//   if (!dev) {
+//     // @ts-ignore
+//     console.log = new Function();
+//     // @ts-ignore
+//     console.info = new Function();
+//   }
+// })();
 
 async function bootstrap() {
+  if (location.hash.startsWith('#/module/')) {
+    location.href = '#/dashboard';
+  }
+
   const fpPromise = FingerprintJS.load();
   await (async () => {
     const fp = await fpPromise;
